@@ -32,7 +32,6 @@ public class Cita {
 	public Date getFecha() {
 		return fecha;
 	}
-	
-	
+	 
 
 }
