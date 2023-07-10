@@ -18,32 +18,16 @@ public class Persona {
 		return codigo;
 	}
 
-	public void setCodigo(String codigo) {
-		this.codigo = codigo;
-	}
-
 	public String getNombre() {
 		return nombre;
-	}
-
-	public void setNombre(String nombre) {
-		this.nombre = nombre;
 	}
 
 	public int getEdad() {
 		return edad;
 	}
 
-	public void setEdad(int edad) {
-		this.edad = edad;
-	}
-
 	public boolean isSeguroMedico() {
 		return seguroMedico;
-	}
-
-	public void setSeguroMedico(boolean seguroMedico) {
-		this.seguroMedico = seguroMedico;
 	}
 
 }
