@@ -46,4 +46,82 @@ public class Clinica {
 		return misConsultas;
 	}
 
+	// Buscar Paciente por el código.
+	public Paciente BuscarPacienteByCode(String idPaciente) {
+		Paciente aux = null;
+		boolean encontrado = false;
+		int i = 0;
+		while (!encontrado && i < misPacientes.size()) {
+			if (misPacientes.get(i).getCodigo().equalsIgnoreCase(idPaciente)) {
+				aux = misPacientes.get(i);
+				encontrado = true;
+			}
+			i++;
+		}
+		return aux;
+
+	}
+
+	// Buscar medico por el código.
+	public Medico buscarMedicoByCode(String idMedico) {
+		Medico aux = null;
+		boolean encontrado = false;
+		int i = 0;
+		while (!encontrado && i < misMedicos.size()) {
+			if (misMedicos.get(i).getCodigo().equalsIgnoreCase(idMedico)) {
+				aux = misMedicos.get(i);
+				encontrado = true;
+			}
+			i++;
+		}
+		return aux;
+	}
+
+	// Buscar Vacuna por el código.
+	public Vacuna buscarVacunaByCode(String idVacuna) {
+		Vacuna aux = null;
+		boolean encontrado = false;
+		int i = 0;
+		while (!encontrado && i < misVacunas.size()) {
+			if (misVacunas.get(i).getCodigo().equalsIgnoreCase(idVacuna)) {
+				aux = misVacunas.get(i);
+				encontrado = true;
+			}
+			i++;
+		}
+		return aux;
+	}
+
+	// buscar Enfermedad por el código.
+	public Enfermedad buscarEnfermedadByCode(String idEnfermedad) {
+		Enfermedad aux = null;
+		boolean encontrado = false;
+		int i = 0;
+		while (!encontrado && i < misEnfermedades.size()) {
+			if (misEnfermedades.get(i).getCodigo().equalsIgnoreCase(idEnfermedad)) {
+				aux = misEnfermedades.get(i);
+				encontrado = true;
+			}
+			i++;
+		}
+		return aux;
+	}
+
+	// buscar Consulta por el código.
+	public Consulta buscarConsultaByCode(String idConsulta) {
+		Consulta aux = null;
+		boolean encontrado = false;
+		int i = 0;
+		while (!encontrado && i < misConsultas.size()) {
+			if (misConsultas.get(i).getCodConsulta().equalsIgnoreCase(idConsulta)) {
+				aux = misConsultas.get(i);
+				encontrado = true;
+			}
+			i++;
+		}
+		return aux;
+	}
+
+	//
+
 }
