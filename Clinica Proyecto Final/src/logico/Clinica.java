@@ -123,13 +123,10 @@ public class Clinica {
 		}
 		return aux;
 	}
-
-	public static Secretaria getInstanceSecretaria() {
-		if (miSecretaria == null) {
-			miSecretaria = new Secretaria();
-		}
-		return miSecretaria;
-		
-	}
-
+	/*
+	 * public static Secretaria getInstanceSecretaria() { if (miSecretaria == null)
+	 * { miSecretaria = new Secretaria(); } return miSecretaria;
+	 * 
+	 * }
+	 */
 }
