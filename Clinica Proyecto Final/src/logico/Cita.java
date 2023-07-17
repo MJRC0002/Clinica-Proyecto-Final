@@ -5,15 +5,15 @@ import java.util.Date;
 public class Cita {
 	
 	private String codCita;
-	private String idPersona;
 	private String idMedico;
+	private Persona persona;
 	private Date fecha;
 	
-	public Cita(String codCita, String idPersona, String idMedico) {
+	public Cita(String codCita, String idMedico, Persona persona) {
 		super();
 		this.codCita = codCita;
-		this.idPersona = idPersona;
 		this.idMedico = idMedico;
+		this.persona = persona;
 		this.fecha = new Date();
 	}
 
@@ -21,9 +21,7 @@ public class Cita {
 		return codCita;
 	}
 
-	public String getIdPersona() {
-		return idPersona;
-	}
+	
 
 	public String getIdMedico() {
 		return idMedico;
@@ -31,6 +29,10 @@ public class Cita {
 
 	public Date getFecha() {
 		return fecha;
+	}
+
+	public Persona getPersona() {
+		return persona;
 	}
 	 
 

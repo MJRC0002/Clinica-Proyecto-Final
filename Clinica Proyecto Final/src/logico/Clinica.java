@@ -9,6 +9,7 @@ public class Clinica {
 	private ArrayList<Enfermedad> misEnfermedades;
 	private ArrayList<Consulta> misConsultas;
 	private static Clinica miClinica = null;
+	private static Secretaria miSecretaria = null;
 	public static int codigoVacuna = 1, codigoPersonas = 1, codigoCita = 1, codigoMedico = 1;
 
 	public Clinica() {
@@ -121,6 +122,14 @@ public class Clinica {
 			i++;
 		}
 		return aux;
+	}
+
+	public static Secretaria getInstanceSecretaria() {
+		if (miSecretaria == null) {
+			miSecretaria = new Secretaria();
+		}
+		return miSecretaria;
+		
 	}
 
 }
