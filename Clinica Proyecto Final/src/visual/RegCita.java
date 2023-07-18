@@ -218,8 +218,14 @@ public class RegCita extends JDialog {
 							else
 								tieneSeguro = false;
 
+							char genero;
+							if (rdbtnMasculino.isSelected())
+								genero = 'm';
+							else {
+								genero = 'f';
+							}
 							Persona persona = new Persona(txtCodigoPersona.getText(), txtNombre.getText(),
-									Integer.parseInt(txtEdad.getText()), tieneSeguro);
+									Integer.parseInt(txtEdad.getText()), tieneSeguro, genero);
 							Cita cita = new Cita(txtCodigoCita.getText(), txtCodigoDoctor.getText(), persona);
 							Clinica.miSecretaria.getMisCitas().add(cita);
 							Cleaner();

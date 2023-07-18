@@ -2,25 +2,25 @@ package logico;
 
 public class Consulta {
 	private String codConsulta;
-	private String codigoPaciente;
+	private Paciente paciente;
 	private Enfermedad enfermedad;
 	private String diagnostico;
 	private String sintomas;
 	private boolean bajoVig;
 
-	public Consulta(String codConsulta, String codigoPaciente, Enfermedad enfermedad, String diagnostico,
-			String sintomas, boolean bajoVig) {
+	public Consulta(String codConsulta, Paciente paciente, Enfermedad enfermedad, String diagnostico, String sintomas,
+			boolean bajoVig) {
 		super();
 		this.codConsulta = codConsulta;
-		this.codigoPaciente = codigoPaciente;
+		this.paciente = paciente;
 		this.enfermedad = enfermedad;
 		this.diagnostico = diagnostico;
 		this.sintomas = sintomas;
 		this.bajoVig = bajoVig;
 	}
 
-	public String getCodigoPaciente() {
-		return codigoPaciente;
+	public Paciente getPaciente() {
+		return paciente;
 	}
 
 	public Enfermedad getEnfermedad() {

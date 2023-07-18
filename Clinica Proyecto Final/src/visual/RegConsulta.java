@@ -16,16 +16,30 @@ import java.util.Date;
 import java.util.Calendar;
 import javax.swing.JTextField;
 import javax.swing.border.TitledBorder;
+import javax.swing.table.DefaultTableModel;
+
+import com.sun.org.apache.bcel.internal.generic.LoadClass;
+import com.sun.xml.internal.bind.v2.model.core.ID;
 
 import logico.Cita;
 import logico.Clinica;
+import logico.Consulta;
+import logico.Enfermedad;
+import logico.HistorialMedico;
 import logico.Medico;
+import logico.Paciente;
 import logico.Persona;
+import logico.Vacuna;
 import sun.misc.Cleaner;
 
 import javax.swing.JRadioButton;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import javax.swing.UIManager;
+import java.awt.Color;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
+import javax.swing.JCheckBox;
 
 public class RegConsulta extends JDialog {
 
@@ -34,26 +48,39 @@ public class RegConsulta extends JDialog {
 	private JButton btnCancelar;
 	private JPanel panel;
 	private JSpinner spnFecha;
-	private JTextField txtCodigoCita;
-	private JTextField txtCodigoDoctor;
+	private JTextField txtCodigoConsulta;
 	private JTextField txtNombre;
 	private JLabel lblEdad;
 	private JTextField txtEdad;
 	private JLabel lblSeguroMedico;
 	private JPanel panelPersona;
-	private JTextField txtCodigoPersona;
+	private JTextField txtCodigoPaciente;
 	private JRadioButton rdbtnTieneSeguro;
 	private JRadioButton rdbtnNoTieneSeguro;
 	private JLabel lblGenero;
 	private JRadioButton rdbtnMasculino;
 	private JRadioButton rdbtnFemenino;
+	private JRadioButton rdbtnNoEstarEnfermo;
+	private JRadioButton rdbtnEstaEnfermo;
+	private JTextField txtEnfermedad;
+	private JTable table;
+	private DefaultTableModel enfermedadesRegistradasModel;
+	private JLabel lblBajoVigilancia;
+	private JLabel lblDiagnostico;
+	private JTextField txtDiagnostico;
+	private JLabel lblSintomas;
+	private JTextField txtSintomas;
+	private JRadioButton rdbtnSiBajoVigilancia;
+	private JRadioButton rdbtnNoBajoVigilancia;
+	private JCheckBox chckbxHistorialMedico;
+	private static Object[] row;
 
 	/**
 	 * Launch the application.
 	 */
 	public static void main(String[] args) {
 		try {
-			RegCita dialog = new RegCita();
+			RegConsulta dialog = new RegConsulta(null);
 			dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 			dialog.setVisible(true);
 		} catch (Exception e) {
@@ -64,10 +91,11 @@ public class RegConsulta extends JDialog {
 	/**
 	 * Create the dialog.
 	 */
-	public RegConsulta() {
+	public RegConsulta(Cita cita) {
+
 		setResizable(false);
 		setTitle("Registrar Consulta");
-		setBounds(100, 100, 535, 462);
+		setBounds(100, 100, 535, 670);
 		setLocationRelativeTo(null);
 		getContentPane().setLayout(new BorderLayout());
 		contentPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
@@ -79,66 +107,108 @@ public class RegConsulta extends JDialog {
 			contentPanel.add(panel, BorderLayout.CENTER);
 			panel.setLayout(null);
 
-			JPanel panelCita = new JPanel();
-			panelCita.setBorder(new TitledBorder(null, "Informaci\u00F3n de cita:", TitledBorder.LEADING,
-					TitledBorder.TOP, null, null));
-			panelCita.setBounds(15, 16, 489, 142);
-			panel.add(panelCita);
-			panelCita.setLayout(null);
+			JPanel panelConsulta = new JPanel();
+			panelConsulta.setBorder(new TitledBorder(UIManager.getBorder("TitledBorder.border"),
+					"Informaci\u00F3n de consulta:", TitledBorder.LEADING, TitledBorder.TOP, null, new Color(0, 0, 0)));
+			panelConsulta.setBounds(15, 13, 489, 316);
+			panel.add(panelConsulta);
+			panelConsulta.setLayout(null);
 
-			JLabel lblCodigoCita = new JLabel("C\u00F3digo:");
-			lblCodigoCita.setBounds(15, 40, 69, 20);
-			panelCita.add(lblCodigoCita);
+			JLabel lblCodigoConsulta = new JLabel("C\u00F3digo:");
+			lblCodigoConsulta.setBounds(15, 40, 69, 20);
+			panelConsulta.add(lblCodigoConsulta);
 
-			txtCodigoCita = new JTextField();
-			txtCodigoCita.setText("Cita - " + Clinica.getInstance().codigoCita);
-			txtCodigoCita.setBounds(73, 37, 146, 26);
-			panelCita.add(txtCodigoCita);
-			txtCodigoCita.setEditable(false);
-			txtCodigoCita.setColumns(10);
-
-			JLabel lblCodigoDoctor = new JLabel("C\u00F3digo del doctor:");
-			lblCodigoDoctor.setBounds(15, 79, 139, 20);
-			panelCita.add(lblCodigoDoctor);
-
-			txtCodigoDoctor = new JTextField();
-			txtCodigoDoctor.addKeyListener(new KeyAdapter() {
-				@Override
-				public void keyTyped(KeyEvent e) {
-					char key = e.getKeyChar();
-					if (!Character.isDigit(key))
-						e.consume();
-				}
-			});
-			txtCodigoDoctor.setBounds(151, 79, 146, 26);
-			panelCita.add(txtCodigoDoctor);
-			txtCodigoDoctor.setColumns(10);
+			txtCodigoConsulta = new JTextField();
+			txtCodigoConsulta.setText("Consulta - " + Clinica.getInstance().codigoConsulta);
+			txtCodigoConsulta.setBounds(73, 37, 146, 26);
+			panelConsulta.add(txtCodigoConsulta);
+			txtCodigoConsulta.setEditable(false);
+			txtCodigoConsulta.setColumns(10);
 
 			JLabel lblFecha = new JLabel("Fecha:");
 			lblFecha.setBounds(244, 40, 53, 20);
-			panelCita.add(lblFecha);
+			panelConsulta.add(lblFecha);
 
 			spnFecha = new JSpinner();
-			spnFecha.setBounds(294, 37, 155, 26);
-			panelCita.add(spnFecha);
+			spnFecha.setEnabled(false);
+			spnFecha.setBounds(294, 37, 183, 26);
+			panelConsulta.add(spnFecha);
 			spnFecha.setModel(new SpinnerDateModel(new Date(), null, null, Calendar.DAY_OF_YEAR));
 
-			panelPersona = new JPanel();
-			panelPersona.setBorder(new TitledBorder(null, "Informaci\u00F3n de persona:", TitledBorder.LEADING,
+			JPanel panelEnfermedad = new JPanel();
+			panelEnfermedad.setBorder(new TitledBorder(null, "Enfermedades registradas", TitledBorder.LEADING,
 					TitledBorder.TOP, null, null));
-			panelPersona.setBounds(15, 194, 489, 158);
+			panelEnfermedad.setBounds(14, 106, 205, 140);
+			panelConsulta.add(panelEnfermedad);
+			panelEnfermedad.setLayout(new BorderLayout(0, 0));
+
+			JScrollPane scrollPane = new JScrollPane();
+			panelEnfermedad.add(scrollPane, BorderLayout.CENTER);
+
+			table = new JTable();
+			enfermedadesRegistradasModel = new DefaultTableModel();
+			String[] columnNames = { "Código", "Nombre", "Sintomas" };
+			enfermedadesRegistradasModel.setColumnIdentifiers(columnNames);
+			table.setModel(enfermedadesRegistradasModel);
+			scrollPane.setViewportView(table);
+
+			JLabel lblEnfermedad = new JLabel("Enfermedad:");
+			lblEnfermedad.setBounds(15, 73, 83, 20);
+			panelConsulta.add(lblEnfermedad);
+
+			txtEnfermedad = new JTextField();
+			txtEnfermedad.setEditable(false);
+			txtEnfermedad.setEnabled(false);
+			txtEnfermedad.setBounds(103, 71, 116, 26);
+			panelConsulta.add(txtEnfermedad);
+			txtEnfermedad.setColumns(10);
+
+			lblBajoVigilancia = new JLabel("Bajo vigilancia del doctor:");
+			lblBajoVigilancia.setBounds(14, 259, 158, 20);
+			panelConsulta.add(lblBajoVigilancia);
+
+			rdbtnSiBajoVigilancia = new JRadioButton("Si");
+			rdbtnSiBajoVigilancia.setBounds(24, 282, 45, 25);
+			panelConsulta.add(rdbtnSiBajoVigilancia);
+
+			rdbtnNoBajoVigilancia = new JRadioButton("No");
+			rdbtnNoBajoVigilancia.setBounds(89, 282, 45, 25);
+			panelConsulta.add(rdbtnNoBajoVigilancia);
+
+			lblDiagnostico = new JLabel("Diagnostico:");
+			lblDiagnostico.setBounds(244, 73, 83, 20);
+			panelConsulta.add(lblDiagnostico);
+
+			txtDiagnostico = new JTextField();
+			txtDiagnostico.setBounds(244, 103, 233, 76);
+			panelConsulta.add(txtDiagnostico);
+			txtDiagnostico.setColumns(10);
+
+			lblSintomas = new JLabel("Sintomas:");
+			lblSintomas.setBounds(244, 192, 83, 20);
+			panelConsulta.add(lblSintomas);
+
+			txtSintomas = new JTextField();
+			txtSintomas.setColumns(10);
+			txtSintomas.setBounds(244, 225, 233, 76);
+			panelConsulta.add(txtSintomas);
+
+			panelPersona = new JPanel();
+			panelPersona.setBorder(new TitledBorder(UIManager.getBorder("TitledBorder.border"),
+					"Informaci\u00F3n de Paciente", TitledBorder.LEADING, TitledBorder.TOP, null, new Color(0, 0, 0)));
+			panelPersona.setBounds(15, 342, 489, 210);
 			panel.add(panelPersona);
 			panelPersona.setLayout(null);
 
-			JLabel lblCodigoPersona = new JLabel("C\u00F3digo:");
-			lblCodigoPersona.setBounds(15, 36, 57, 20);
-			panelPersona.add(lblCodigoPersona);
+			JLabel lblCodigoPaciente = new JLabel("C\u00F3digo:");
+			lblCodigoPaciente.setBounds(15, 36, 57, 20);
+			panelPersona.add(lblCodigoPaciente);
 
-			txtCodigoPersona = new JTextField();
-			txtCodigoPersona.setEnabled(false);
-			txtCodigoPersona.setColumns(10);
-			txtCodigoPersona.setBounds(72, 33, 146, 26);
-			panelPersona.add(txtCodigoPersona);
+			txtCodigoPaciente = new JTextField();
+			txtCodigoPaciente.setEnabled(false);
+			txtCodigoPaciente.setColumns(10);
+			txtCodigoPaciente.setBounds(72, 33, 146, 26);
+			panelPersona.add(txtCodigoPaciente);
 
 			JLabel lblNombre = new JLabel("Nombre:");
 			lblNombre.setBounds(15, 75, 76, 20);
@@ -171,7 +241,7 @@ public class RegConsulta extends JDialog {
 
 			rdbtnNoTieneSeguro = new JRadioButton("No");
 			rdbtnNoTieneSeguro.setEnabled(false);
-			rdbtnNoTieneSeguro.setBounds(424, 71, 65, 29);
+			rdbtnNoTieneSeguro.setBounds(424, 71, 57, 29);
 			panelPersona.add(rdbtnNoTieneSeguro);
 
 			lblGenero = new JLabel("G\u00E9nero:");
@@ -187,11 +257,50 @@ public class RegConsulta extends JDialog {
 			rdbtnFemenino.setEnabled(false);
 			rdbtnFemenino.setBounds(153, 117, 65, 29);
 			panelPersona.add(rdbtnFemenino);
-			
-			JButton btnHistorial = new JButton("Historial");
-			btnHistorial.setEnabled(false);
-			btnHistorial.setBounds(255, 117, 115, 29);
-			panelPersona.add(btnHistorial);
+
+			JLabel lblEnfermo = new JLabel("Enfermo:");
+			lblEnfermo.setBounds(15, 160, 86, 20);
+			panelPersona.add(lblEnfermo);
+
+			rdbtnEstaEnfermo = new JRadioButton("Si");
+			rdbtnEstaEnfermo.setEnabled(false);
+			rdbtnEstaEnfermo.setBounds(94, 158, 57, 29);
+			panelPersona.add(rdbtnEstaEnfermo);
+
+			rdbtnNoEstarEnfermo = new JRadioButton("No");
+			rdbtnNoEstarEnfermo.setEnabled(false);
+			rdbtnNoEstarEnfermo.setBounds(153, 158, 65, 29);
+			panelPersona.add(rdbtnNoEstarEnfermo);
+
+			chckbxHistorialMedico = new JCheckBox("Agregar Historial Medico.");
+			chckbxHistorialMedico.setBounds(255, 112, 195, 38);
+			panelPersona.add(chckbxHistorialMedico);
+
+			// Cargar persona para crear el paciente.
+			if (cita != null)
+				loadPaciente(cita);
+			else {
+				txtCodigoPaciente.setEnabled(true);
+				txtNombre.setEnabled(true);
+				txtEdad.setEnabled(true);
+				rdbtnTieneSeguro.setEnabled(true);
+				rdbtnNoTieneSeguro.setEnabled(true);
+				rdbtnMasculino.setEnabled(true);
+				rdbtnFemenino.setEnabled(true);
+				rdbtnEstaEnfermo.setEnabled(true);
+				rdbtnNoEstarEnfermo.setEnabled(true);
+			}
+
+			// Agregar listener para la selección de enfermedad en la tabla
+			table.getSelectionModel().addListSelectionListener(e -> {
+				if (!e.getValueIsAdjusting()) {
+					int selectedRow = table.getSelectedRow();
+					if (selectedRow >= 0) {
+						String codigoEnfermedad = (String) table.getValueAt(selectedRow, 0);
+						txtEnfermedad.setText(codigoEnfermedad);
+					}
+				}
+			});
 		}
 		{
 			JPanel buttonPane = new JPanel();
@@ -209,11 +318,36 @@ public class RegConsulta extends JDialog {
 							else
 								tieneSeguro = false;
 
-							Persona persona = new Persona(txtCodigoPersona.getText(), txtNombre.getText(),
-									Integer.parseInt(txtEdad.getText()), tieneSeguro);
-							Cita cita = new Cita(txtCodigoCita.getText(), txtCodigoDoctor.getText(), persona);
-							Clinica.miSecretaria.getMisCitas().add(cita);
-							Cleaner();
+							char genero;
+							if (rdbtnMasculino.isSelected())
+								genero = 'm';
+							else
+								genero = 'f';
+
+							boolean enfermo;
+							if (rdbtnEstaEnfermo.isSelected())
+								enfermo = true;
+							else
+								enfermo = false;
+
+							boolean bv;
+							if (rdbtnSiBajoVigilancia.isSelected())
+								bv = true;
+							else
+								bv = false;
+
+							HistorialMedico historial = null;
+							Paciente paciente = new Paciente(txtCodigoPaciente.getText(), txtNombre.getText(),
+									Integer.parseInt(txtEdad.getText()), tieneSeguro, genero, enfermo, historial);
+							Enfermedad enfermedad = Clinica.getInstance()
+									.buscarEnfermedadByCode(txtEnfermedad.getText());
+							Consulta consulta = new Consulta(txtCodigoConsulta.getText(), paciente, enfermedad,
+									txtDiagnostico.getText(), txtSintomas.getText(), bv);
+							if (chckbxHistorialMedico.isSelected()) {
+								historial = new HistorialMedico();
+								historial.getMisConsultasRelevantes().add(consulta);
+							}
+							Clinica.getInstance().getMisConsultas().add(consulta);
 						}
 					}
 				});
@@ -233,18 +367,35 @@ public class RegConsulta extends JDialog {
 				buttonPane.add(btnCancelar);
 			}
 		}
+		loadEnfermedades();
 	}
 
-	protected void Cleaner() {
-		Clinica.getInstance().codigoCita++;
-		txtCodigoDoctor.setText("");
-		txtCodigoPersona.setText("");
-		txtNombre.setText("");
-		txtEdad.setText("");
-		spnFecha.setModel(new SpinnerDateModel(new Date(), null, null, Calendar.DAY_OF_YEAR));
-		rdbtnNoTieneSeguro.setSelected(false);
-		rdbtnTieneSeguro.setSelected(false);
-		rdbtnFemenino.setSelected(false);
-		rdbtnMasculino.setSelected(false);
+	private void loadPaciente(Cita cita) {
+		Persona persona = cita.getPersona();
+		txtCodigoPaciente.setText(persona.getCodigo());
+		txtNombre.setText(persona.getNombre());
+		txtEdad.setText(Integer.toString(persona.getEdad()));
+		if (persona.getGenero() == 'm')
+			rdbtnMasculino.setSelected(true);
+		else
+			rdbtnFemenino.setSelected(true);
+
+		if (persona.isSeguroMedico())
+			rdbtnTieneSeguro.setSelected(true);
+		else
+			rdbtnNoTieneSeguro.setSelected(false);
+
+	}
+
+	private void loadEnfermedades() {
+		enfermedadesRegistradasModel.setRowCount(0);
+		row = new Object[table.getColumnCount()];
+
+		for (Vacuna v : Clinica.getInstance().getMisVacunas()) {
+			row[0] = v.getCodigo();
+			row[1] = v.getNombre();
+			row[2] = v.getDescripcion();
+			enfermedadesRegistradasModel.addRow(row);
+		}
 	}
 }

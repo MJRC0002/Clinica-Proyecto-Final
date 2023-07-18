@@ -10,7 +10,8 @@ public class Clinica {
 	private ArrayList<Consulta> misConsultas;
 	private static Clinica miClinica = null;
 	public static Secretaria miSecretaria = null;
-	public static int codigoVacuna = 1, codigoPersonas = 1, codigoCita = 1, codigoMedico = 1;
+	public static int codigoVacuna = 1, codigoPersonas = 1, codigoCita = 1, codigoMedico = 1, codigoConsulta = 1,
+			codigoHistorial = 1;
 
 	public Clinica() {
 		super();
