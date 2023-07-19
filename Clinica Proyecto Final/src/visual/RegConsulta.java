@@ -178,7 +178,7 @@ public class RegConsulta extends JDialog {
 			lblDiagnostico = new JLabel("Diagnostico:");
 			lblDiagnostico.setBounds(244, 73, 83, 20);
 			panelConsulta.add(lblDiagnostico);
-
+//Esto es un cambio
 			txtDiagnostico = new JTextField();
 			txtDiagnostico.setBounds(244, 103, 233, 76);
 			panelConsulta.add(txtDiagnostico);
