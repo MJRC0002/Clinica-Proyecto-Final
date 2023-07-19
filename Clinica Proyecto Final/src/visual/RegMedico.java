@@ -233,7 +233,7 @@ public class RegMedico extends JDialog {
 				btnCancelar.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent e) {
 						dispose();
-						//esto es un cambio
+						// esto es un cambio
 					}
 				});
 				btnCancelar.setActionCommand("Cancel");
