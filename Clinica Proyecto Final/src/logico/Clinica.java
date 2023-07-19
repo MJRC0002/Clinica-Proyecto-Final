@@ -2,6 +2,10 @@ package logico;
 
 import java.util.ArrayList;
 
+import com.sun.org.apache.xml.internal.resolver.helpers.PublicId;
+
+import javafx.scene.control.IndexRange;
+
 public class Clinica {
 	private ArrayList<Medico> misMedicos;
 	private ArrayList<Paciente> misPacientes;
@@ -124,10 +128,61 @@ public class Clinica {
 		}
 		return aux;
 	}
-	/*
-	 * public static Secretaria getInstanceSecretaria() { if (miSecretaria == null)
-	 * { miSecretaria = new Secretaria(); } return miSecretaria;
-	 * 
-	 * }
-	 */
+
+	// Cuantos hombres pacientes.
+	public int cantHombresPacientes() {
+		int aux = 0;
+		for (Paciente paciente : misPacientes) {
+			if (paciente.getGenero() == 'm') {
+				aux++;
+			}
+		}
+		return aux;
+	}
+
+	// Cuantos mujeres pacientes.
+	public int cantMujeresPacientes() {
+		int aux = 0;
+		for (Paciente paciente : misPacientes) {
+			if (paciente.getGenero() == 'f') {
+				aux++;
+			}
+		}
+		return aux;
+	}
+
+	// Total pacientes atendidos.
+	public int totalPacientesAtendidos() {
+		return misConsultas.size();
+	}
+
+	// Porcentaje de las enfermedades.
+	public int porcentajeEnfermedad(String idEnfermedad) {
+		int count = 0;
+		for (Consulta consulta : misConsultas) {
+			if (consulta.getEnfermedad().getCodigo().equalsIgnoreCase(idEnfermedad)) {
+				count++;
+			}
+		
+		}
+		return count;
+
+	}
+	
+	// Porcentaje de las enfermedades.
+		public float porcentajeVacunado(String idVacuna) {
+			int count = 0;
+			for (Paciente paciente : misPacientes) {
+				for (Vacuna vacuna : paciente.getMisVacunas()) {
+					if(vacuna.getCodigo().equalsIgnoreCase(idVacuna))
+						count++;
+				}
+			}
+			if (count == 0)
+				return count;
+			else {
+				return misPacientes.size() / (count * misPacientes.size());
+			}
+		}
+	
 }
