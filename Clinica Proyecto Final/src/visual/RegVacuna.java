@@ -15,8 +15,8 @@ import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableModel;
 
 import logico.Clinica;
+import logico.Enfermedad;
 import logico.Vacuna;
-import sun.misc.Cleaner;
 
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -32,12 +32,13 @@ public class RegVacuna extends JDialog {
 	private JButton btnRegistrar;
 	private JButton btnCancelar;
 	private JTextField txtDescripción;
-	private JTable tableRegistradas;
-	private DefaultTableModel enferRegistradasModel;
-	private DefaultTableModel enferSeleccionadasModel;
-	private JTable tableSelecionadas;
+	private static JTable tableRegistradas;
+	private static DefaultTableModel enferRegistradasModel;
+	private static DefaultTableModel enferSeleccionadasModel;
+	private static JTable tableSelecionadas;
 	private JButton btnAgregar;
 	private JButton btnQuitar;
+	private static Object[] row;
 
 	/**
 	 * Launch the application.
@@ -169,6 +170,12 @@ public class RegVacuna extends JDialog {
 									"Campos incompletos", JOptionPane.ERROR_MESSAGE);
 						} else {
 							Vacuna vacuna = new Vacuna(codigo, nombre, descripcion);
+							for (int i = 0; i < enferSeleccionadasModel.getRowCount(); i++) {
+								Enfermedad enfermedad = Clinica.getInstance()
+										.buscarEnfermedadByCode((String) enferSeleccionadasModel.getValueAt(i, 0));
+								vacuna.getLasEnfermedades().add(enfermedad);
+								enfermedad.getVacunasEfectivas().add(vacuna);
+							}
 							Clinica.getInstance().getMisVacunas().add(vacuna);
 							clean();
 						}
@@ -188,16 +195,27 @@ public class RegVacuna extends JDialog {
 				});
 
 				btnAgregar = new JButton("Agregar");
+				btnAgregar.addActionListener(new ActionListener() {
+					public void actionPerformed(ActionEvent e) {
+						agregarEnfermedadSeleccionada();
+					}
+				});
 				btnAgregar.setEnabled(false);
 				buttonPane.add(btnAgregar);
 
 				btnQuitar = new JButton("Quitar");
+				btnQuitar.addActionListener(new ActionListener() {
+					public void actionPerformed(ActionEvent e) {
+						quitarEnfermedadSeleccionada();
+					}
+				});
 				btnQuitar.setEnabled(false);
 				buttonPane.add(btnQuitar);
 				btnCancelar.setActionCommand("Cancel");
 				buttonPane.add(btnCancelar);
 			}
 		}
+		loadEnfermedades();
 	}
 
 	protected void clean() {
@@ -211,5 +229,42 @@ public class RegVacuna extends JDialog {
 		// Deshabilita los botones Agregar y Quitar
 		btnAgregar.setEnabled(false);
 		btnQuitar.setEnabled(false);
+	}
+
+	public static void loadEnfermedades() {
+		enferRegistradasModel.setRowCount(0);
+		row = new Object[tableRegistradas.getColumnCount()];
+
+		for (Enfermedad enfermedad : Clinica.getInstance().getMisEnfermedades()) {
+			row[0] = enfermedad.getCodigo();
+			row[1] = enfermedad.getNombre();
+			row[2] = enfermedad.getSintomas();
+			enferRegistradasModel.addRow(row);
+		}
+
+	}
+
+	private void agregarEnfermedadSeleccionada() {
+		int filaSeleccionada = tableRegistradas.getSelectedRow();
+		if (filaSeleccionada != -1) {
+			Object[] filaDatos = new Object[3];
+			filaDatos[0] = enferRegistradasModel.getValueAt(filaSeleccionada, 0);
+			filaDatos[1] = enferRegistradasModel.getValueAt(filaSeleccionada, 1);
+			filaDatos[2] = enferRegistradasModel.getValueAt(filaSeleccionada, 2);
+			enferSeleccionadasModel.addRow(filaDatos);
+			enferRegistradasModel.removeRow(filaSeleccionada);
+		}
+	}
+
+	private void quitarEnfermedadSeleccionada() {
+		int filaSeleccionada = tableSelecionadas.getSelectedRow();
+		if (filaSeleccionada != -1) {
+			Object[] filaDatos = new Object[3];
+			filaDatos[0] = enferSeleccionadasModel.getValueAt(filaSeleccionada, 0);
+			filaDatos[1] = enferSeleccionadasModel.getValueAt(filaSeleccionada, 1);
+			filaDatos[2] = enferSeleccionadasModel.getValueAt(filaSeleccionada, 2);
+			enferRegistradasModel.addRow(filaDatos);
+			enferSeleccionadasModel.removeRow(filaSeleccionada);
+		}
 	}
 }

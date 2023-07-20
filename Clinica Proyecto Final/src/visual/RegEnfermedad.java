@@ -17,8 +17,10 @@ import logico.Enfermedad;
 import logico.Vacuna;
 
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
 import java.awt.event.ActionEvent;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 import javax.swing.JScrollPane;
 import javax.swing.ScrollPaneConstants;
@@ -40,13 +42,15 @@ public class RegEnfermedad extends JDialog {
 	private JButton btnIzq;
 	private JButton btnDer;
 	private static Object[] row;
+	private Enfermedad miEnfermedad = null;
+	private JButton btnRegistar;
 
 	/**
 	 * Launch the application.
 	 */
 	public static void main(String[] args) {
 		try {
-			RegEnfermedad dialog = new RegEnfermedad();
+			RegEnfermedad dialog = new RegEnfermedad(null, 0);
 			dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 			dialog.setVisible(true);
 		} catch (Exception e) {
@@ -57,8 +61,15 @@ public class RegEnfermedad extends JDialog {
 	/**
 	 * Create the dialog.
 	 */
-	public RegEnfermedad() {
-		setTitle("Registrar Enfermedad");
+	public RegEnfermedad(Enfermedad enfermedad, int ind) {
+		miEnfermedad = enfermedad;
+		if (enfermedad != null) {
+			setTitle("Modificar Enfermedad");
+			btnRegistar.setText("Modificar");
+			loadEnfermedadData();
+		} else {
+			setTitle("Registrar Enfermedad");
+		}
 		setResizable(false);
 		setBounds(100, 100, 586, 507);
 		setLocationRelativeTo(null);
@@ -193,22 +204,42 @@ public class RegEnfermedad extends JDialog {
 			buttonPane.setLayout(new FlowLayout(FlowLayout.RIGHT));
 			getContentPane().add(buttonPane, BorderLayout.SOUTH);
 			{
-				JButton btnRegistar = new JButton("Registrar");
+				btnRegistar = new JButton("Registrar");
 				btnRegistar.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent e) {
-						int cant = vacunasEfecModel.getRowCount();
-						Enfermedad enf = null;
-						String codigo = txtCodigo.getText();
-						String sintomas = txtSintomas.getText();
-						String nombre = txtNombre.getText();
-						String medicamentos = txtMedicamentos.getText();
-						enf = new Enfermedad(codigo, nombre, sintomas, medicamentos);
-						for (int i = 0; i < cant; i++) {
-							Vacuna vacuna = Clinica.getInstance()
-									.buscarVacunaByCode((String) vacunasEfecModel.getValueAt(i, 0));
-							enf.getVacunasEfectivas().add(vacuna);
+						if (enfermedad == null) {
+							int cant = vacunasEfecModel.getRowCount();
+							Enfermedad enf = null;
+							String codigo = txtCodigo.getText();
+							String sintomas = txtSintomas.getText();
+							String nombre = txtNombre.getText();
+							String medicamentos = txtMedicamentos.getText();
+							enf = new Enfermedad(codigo, nombre, sintomas, medicamentos);
+							for (int i = 0; i < cant; i++) {
+								Vacuna vacuna = Clinica.getInstance()
+										.buscarVacunaByCode((String) vacunasEfecModel.getValueAt(i, 0));
+								enf.getVacunasEfectivas().add(vacuna);
+							}
+							Clinica.getInstance().getMisEnfermedades().add(enf);
+							clean();
+						} else {
+							int respuesta = JOptionPane.showConfirmDialog(null, "¿Esta seguro que desea continuar?",
+									"Confirmación", JOptionPane.YES_NO_OPTION);
+							if (respuesta == JOptionPane.YES_OPTION) {
+								Enfermedad modificado = new Enfermedad(miEnfermedad.getCodigo(),
+										miEnfermedad.getNombre(), txtSintomas.getText(),
+										miEnfermedad.getMedicamentos());
+								Clinica.getInstance().getMisEnfermedades().set(ind, modificado);
+								JOptionPane.showMessageDialog(null,
+										"Modifico la enfermedad con nombre: " + modificado.getNombre()
+												+ ", correctamente.",
+										"Modificacion con exito", JOptionPane.INFORMATION_MESSAGE);
+								ListEnfermedad.loadEnfermedades();
+								dispose();
+							}
+
 						}
-						Clinica.getInstance().getMisEnfermedades().add(enf);
+
 					}
 				});
 				btnRegistar.setActionCommand("OK");
@@ -229,6 +260,32 @@ public class RegEnfermedad extends JDialog {
 		loadVacunas();
 	}
 
+	private void loadEnfermedadData() {
+		if (miEnfermedad != null) {
+			txtCodigo.setEnabled(false);
+			txtCodigo.setText(miEnfermedad.getCodigo());
+			txtNombre.setEnabled(false);
+			txtNombre.setText(miEnfermedad.getNombre());
+			txtSintomas.setText(miEnfermedad.getNombre());
+			txtMedicamentos.setEnabled(false);
+			txtMedicamentos.setText(miEnfermedad.getMedicamentos());
+			dameMisVacunasEfectivas(miEnfermedad.getVacunasEfectivas());
+			btnIzq.setEnabled(false);
+			btnDer.setEnabled(false);
+		}
+	}
+
+	public static String dameMisVacunasEfectivas(ArrayList<Vacuna> vacunasEfectivas) {
+		StringBuilder aux = new StringBuilder();
+		for (Vacuna vacuna : vacunasEfectivas) {
+			aux.append(vacuna.getNombre()).append(", ");
+		}
+		if (aux.length() > 0) {
+			aux.delete(aux.length() - 2, aux.length());
+		}
+		return aux.toString();
+	}
+
 	public void loadVacunas() {
 		vacunasDispModel.setRowCount(0);
 		row = new Object[tableVacunasDisp.getColumnCount()];
@@ -239,7 +296,17 @@ public class RegEnfermedad extends JDialog {
 			row[2] = v.getDescripcion();
 			vacunasDispModel.addRow(row);
 		}
+	}
 
+	// Restablecer los campos a sus valores predeterminados
+	public void clean() {
+		txtCodigo.setText("");
+		txtNombre.setText("");
+		txtSintomas.setText("");
+		txtMedicamentos.setText("");
+		vacunasEfecModel.setRowCount(0);
+		btnIzq.setEnabled(false);
+		btnDer.setEnabled(false);
 	}
 
 }

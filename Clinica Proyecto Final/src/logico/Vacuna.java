@@ -1,15 +1,21 @@
 package logico;
 
+import java.util.ArrayList;
+
 public class Vacuna {
 	private String codigo;
 	private String nombre;
 	private String descripcion;
+	private ArrayList<Enfermedad> lasEnfermedades;
+	private boolean used;
 
 	public Vacuna(String codigo, String nombre, String descripcion) {
 		super();
 		this.codigo = codigo;
 		this.nombre = nombre;
 		this.descripcion = descripcion;
+		this.lasEnfermedades = new ArrayList<>();
+		this.used = false;
 	}
 
 	public String getCodigo() {
@@ -22,6 +28,14 @@ public class Vacuna {
 
 	public String getDescripcion() {
 		return descripcion;
+	}
+
+	public ArrayList<Enfermedad> getLasEnfermedades() {
+		return lasEnfermedades;
+	}
+
+	public boolean isUsed() {
+		return used;
 	}
 
 }

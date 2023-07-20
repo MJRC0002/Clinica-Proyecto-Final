@@ -44,15 +44,15 @@ public class Principal extends JFrame {
 		setBounds(100, 100, 647, 442);
 		setLocationRelativeTo(null);
 		dim = super.getToolkit().getScreenSize();
-		//super.setSize(dim.width, dim.height - 100);
+		// super.setSize(dim.width, dim.height - 100);
 		setLocationRelativeTo(null);
-		
+
 		JMenuBar menuBar = new JMenuBar();
 		setJMenuBar(menuBar);
-		
-		JMenu mnNewMenu = new JMenu("M\u00E9dico");
-		menuBar.add(mnNewMenu);
-		
+
+		JMenu mnMedico = new JMenu("M\u00E9dico");
+		menuBar.add(mnMedico);
+
 		JMenuItem mntmNewMenuItem = new JMenuItem("Registrar m\u00E9dico");
 		mntmNewMenuItem.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -62,23 +62,23 @@ public class Principal extends JFrame {
 			}
 		});
 		mntmNewMenuItem.setEnabled(false);
-		mnNewMenu.add(mntmNewMenuItem);
-		
+		mnMedico.add(mntmNewMenuItem);
+
 		JMenuItem mntmNewMenuItem_1 = new JMenuItem("Listar M\u00E9dico");
-		mnNewMenu.add(mntmNewMenuItem_1);
-		
+		mnMedico.add(mntmNewMenuItem_1);
+
 		JMenu mnConsulta = new JMenu("Consulta");
 		menuBar.add(mnConsulta);
-		
+
 		JMenuItem mntmRegistrarConsulta = new JMenuItem("Registrar consulta");
 		mnConsulta.add(mntmRegistrarConsulta);
-		
+
 		JMenuItem mntmListarConsulta = new JMenuItem("Listar consulta");
 		mnConsulta.add(mntmListarConsulta);
-		
+
 		JMenu mnCita = new JMenu("Cita");
 		menuBar.add(mnCita);
-		
+
 		JMenuItem mntmRegistrarCita = new JMenuItem("Registrar cita");
 		mntmRegistrarCita.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -88,29 +88,36 @@ public class Principal extends JFrame {
 			}
 		});
 		mnCita.add(mntmRegistrarCita);
-		
+
 		JMenuItem mntmListarCita = new JMenuItem("Listar cita");
 		mnCita.add(mntmListarCita);
-		
+
 		JMenu mnEnfermedad = new JMenu("Enfermedad");
 		menuBar.add(mnEnfermedad);
-		
+
 		JMenuItem mntmRegistrarEnfermedad = new JMenuItem("Registrar enfermedad");
 		mntmRegistrarEnfermedad.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				RegEnfermedad enfermedad = new RegEnfermedad();
+				RegEnfermedad enfermedad = new RegEnfermedad(null, 0);
 				enfermedad.setModal(true);
 				enfermedad.setVisible(true);
 			}
 		});
 		mnEnfermedad.add(mntmRegistrarEnfermedad);
-		
+
 		JMenuItem mntmListarEnfermedad = new JMenuItem("Listar enfermedad");
+		mntmListarEnfermedad.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				ListEnfermedad enfermedad = new ListEnfermedad();
+				enfermedad.setModal(true);
+				enfermedad.setVisible(true);
+			}
+		});
 		mnEnfermedad.add(mntmListarEnfermedad);
-		
+
 		JMenu mnVacuna = new JMenu("Vacuna");
 		menuBar.add(mnVacuna);
-		
+
 		JMenuItem mntmRegistrarVacuna = new JMenuItem("Registrar vacuna");
 		mntmRegistrarVacuna.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -120,22 +127,29 @@ public class Principal extends JFrame {
 			}
 		});
 		mnVacuna.add(mntmRegistrarVacuna);
-		
+
 		JMenuItem mntmListarVacuna = new JMenuItem("Listar vacuna");
+		mntmListarVacuna.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				ListVacuna vacuna = new ListVacuna();
+				vacuna.setModal(true);
+				vacuna.setVisible(true);
+			}
+		});
 		mnVacuna.add(mntmListarVacuna);
-		
+
 		JMenu mnSecretaria = new JMenu("Secretaria");
 		menuBar.add(mnSecretaria);
-		
+
 		JMenuItem mntmRegistrarSecretaria = new JMenuItem("Registrar secretaria");
 		mnSecretaria.add(mntmRegistrarSecretaria);
-		
+
 		JMenuItem mntmListarSecretaria = new JMenuItem("Listar secretaria");
 		mnSecretaria.add(mntmListarSecretaria);
-		
-		JMenu mnNewMenu_1 = new JMenu("Administrador");
-		menuBar.add(mnNewMenu_1);
-		
+
+		JMenu mnAdministrador = new JMenu("Administrador");
+		menuBar.add(mnAdministrador);
+
 		JMenu mnRespaldo = new JMenu("Respaldo");
 		menuBar.add(mnRespaldo);
 		contentPane = new JPanel();
