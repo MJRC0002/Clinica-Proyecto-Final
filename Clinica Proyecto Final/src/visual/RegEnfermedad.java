@@ -63,13 +63,11 @@ public class RegEnfermedad extends JDialog {
 	 */
 	public RegEnfermedad(Enfermedad enfermedad, int ind) {
 		miEnfermedad = enfermedad;
-		if (enfermedad != null) {
+		if (miEnfermedad != null) 
 			setTitle("Modificar Enfermedad");
-			btnRegistar.setText("Modificar");
-			loadEnfermedadData();
-		} else {
+		else 
 			setTitle("Registrar Enfermedad");
-		}
+		
 		setResizable(false);
 		setBounds(100, 100, 586, 507);
 		setLocationRelativeTo(null);
@@ -205,9 +203,11 @@ public class RegEnfermedad extends JDialog {
 			getContentPane().add(buttonPane, BorderLayout.SOUTH);
 			{
 				btnRegistar = new JButton("Registrar");
+				if(miEnfermedad != null)
+					btnRegistar.setText("Modficar");
 				btnRegistar.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent e) {
-						if (enfermedad == null) {
+						if (miEnfermedad == null) {
 							int cant = vacunasEfecModel.getRowCount();
 							Enfermedad enf = null;
 							String codigo = txtCodigo.getText();
@@ -258,6 +258,7 @@ public class RegEnfermedad extends JDialog {
 			}
 		}
 		loadVacunas();
+		loadEnfermedadData();
 	}
 
 	private void loadEnfermedadData() {
@@ -266,7 +267,7 @@ public class RegEnfermedad extends JDialog {
 			txtCodigo.setText(miEnfermedad.getCodigo());
 			txtNombre.setEnabled(false);
 			txtNombre.setText(miEnfermedad.getNombre());
-			txtSintomas.setText(miEnfermedad.getNombre());
+			txtSintomas.setText(miEnfermedad.getSintomas());
 			txtMedicamentos.setEnabled(false);
 			txtMedicamentos.setText(miEnfermedad.getMedicamentos());
 			dameMisVacunasEfectivas(miEnfermedad.getVacunasEfectivas());

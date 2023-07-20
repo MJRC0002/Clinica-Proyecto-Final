@@ -73,8 +73,7 @@ public class ListEnfermedad extends JDialog {
 							index = tableEnfermedades.getSelectedRow();
 							if (index >= 0) {
 
-								selected = Clinica.getInstance()
-										.buscarEnfermedadByCode(tableEnfermedades.getValueAt(index, 0).toString());
+								selected = Clinica.getInstance().getMisEnfermedades().get(index);
 								btnUpdate.setEnabled(true);
 							}
 						}
