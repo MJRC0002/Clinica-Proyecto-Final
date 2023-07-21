@@ -226,7 +226,7 @@ public class RegCita extends JDialog {
 							}
 							Persona persona = new Persona(txtCodigoPersona.getText(), txtNombre.getText(),
 									Integer.parseInt(txtEdad.getText()), tieneSeguro, genero);
-							Cita cita = new Cita(txtCodigoCita.getText(), txtCodigoDoctor.getText(), persona);
+							Cita cita = new Cita(txtCodigoCita.getText(), txtCodigoDoctor.getText(), persona, (Date) spnFecha.getValue());
 							Clinica.miSecretaria.getMisCitas().add(cita);
 							Cleaner();
 						}
