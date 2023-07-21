@@ -9,12 +9,12 @@ public class Cita {
 	private Persona persona;
 	private Date fecha;
 	
-	public Cita(String codCita, String idMedico, Persona persona) {
+	public Cita(String codCita, String idMedico, Persona persona, Date fecha) {
 		super();
 		this.codCita = codCita;
 		this.idMedico = idMedico;
 		this.persona = persona;
-		this.fecha = new Date();
+		this.fecha = fecha;
 	}
 
 	public String getCodCita() {

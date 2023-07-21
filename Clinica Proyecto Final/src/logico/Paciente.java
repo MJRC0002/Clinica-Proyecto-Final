@@ -5,7 +5,7 @@ import java.util.ArrayList;
 public class Paciente extends Persona {
 	private ArrayList<Consulta> misConsultas;
 	private ArrayList<Vacuna> misVacunas;
-	private HistorialMedico miHIstorial;
+	private HistorialMedico miHistorial;
 	private boolean enfermo;
 
 	public Paciente(String codigo, String nombre, int edad, boolean seguroMedico, char genero, boolean enfermo,
@@ -15,7 +15,7 @@ public class Paciente extends Persona {
 		this.enfermo = enfermo;
 		misConsultas = new ArrayList<Consulta>();
 		misVacunas = new ArrayList<Vacuna>();
-		this.miHIstorial = miHistorial;
+		this.miHistorial = miHistorial;
 	}
 
 	public boolean isEnfermo() {
@@ -35,7 +35,7 @@ public class Paciente extends Persona {
 	}
 
 	public HistorialMedico getMiHIstorial() {
-		return miHIstorial;
+		return miHistorial;
 	}
 
 }
