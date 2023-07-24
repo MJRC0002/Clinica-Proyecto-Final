@@ -229,6 +229,8 @@ public class RegVacuna extends JDialog {
 		// Deshabilita los botones Agregar y Quitar
 		btnAgregar.setEnabled(false);
 		btnQuitar.setEnabled(false);
+
+		loadEnfermedades();
 	}
 
 	public static void loadEnfermedades() {

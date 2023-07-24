@@ -63,11 +63,11 @@ public class RegEnfermedad extends JDialog {
 	 */
 	public RegEnfermedad(Enfermedad enfermedad, int ind) {
 		miEnfermedad = enfermedad;
-		if (miEnfermedad != null) 
+		if (miEnfermedad != null)
 			setTitle("Modificar Enfermedad");
-		else 
+		else
 			setTitle("Registrar Enfermedad");
-		
+
 		setResizable(false);
 		setBounds(100, 100, 586, 507);
 		setLocationRelativeTo(null);
@@ -203,25 +203,33 @@ public class RegEnfermedad extends JDialog {
 			getContentPane().add(buttonPane, BorderLayout.SOUTH);
 			{
 				btnRegistar = new JButton("Registrar");
-				if(miEnfermedad != null)
+				if (miEnfermedad != null)
 					btnRegistar.setText("Modficar");
 				btnRegistar.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent e) {
 						if (miEnfermedad == null) {
-							int cant = vacunasEfecModel.getRowCount();
-							Enfermedad enf = null;
-							String codigo = txtCodigo.getText();
-							String sintomas = txtSintomas.getText();
-							String nombre = txtNombre.getText();
-							String medicamentos = txtMedicamentos.getText();
-							enf = new Enfermedad(codigo, nombre, sintomas, medicamentos);
-							for (int i = 0; i < cant; i++) {
-								Vacuna vacuna = Clinica.getInstance()
-										.buscarVacunaByCode((String) vacunasEfecModel.getValueAt(i, 0));
-								enf.getVacunasEfectivas().add(vacuna);
+							if (!(txtCodigo.getText().isEmpty() || txtMedicamentos.getText().isEmpty()
+									|| txtNombre.getText().isEmpty() || txtSintomas.getText().isEmpty())) {
+								int cant = vacunasEfecModel.getRowCount();
+								Enfermedad enf = null;
+								String codigo = txtCodigo.getText();
+								String sintomas = txtSintomas.getText();
+								String nombre = txtNombre.getText();
+								String medicamentos = txtMedicamentos.getText();
+								enf = new Enfermedad(codigo, nombre, sintomas, medicamentos);
+								for (int i = 0; i < cant; i++) {
+									Vacuna vacuna = Clinica.getInstance()
+											.buscarVacunaByCode((String) vacunasEfecModel.getValueAt(i, 0));
+									enf.getVacunasEfectivas().add(vacuna);
+								}
+								Clinica.getInstance().getMisEnfermedades().add(enf);
+								clean();
+							} else {
+								JOptionPane.showMessageDialog(null,
+										"Por favor, complete todos los campos antes de registrar la enfermedad.",
+										"Campos incompletos", JOptionPane.ERROR_MESSAGE);
 							}
-							Clinica.getInstance().getMisEnfermedades().add(enf);
-							clean();
+
 						} else {
 							int respuesta = JOptionPane.showConfirmDialog(null, "¿Esta seguro que desea continuar?",
 									"Confirmación", JOptionPane.YES_NO_OPTION);

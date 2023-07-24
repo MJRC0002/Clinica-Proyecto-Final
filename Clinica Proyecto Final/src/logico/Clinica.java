@@ -13,7 +13,7 @@ public class Clinica {
 	private ArrayList<Enfermedad> misEnfermedades;
 	private ArrayList<Consulta> misConsultas;
 	private static Clinica miClinica = null;
-	public static Secretaria miSecretaria = null;
+	private static Secretaria miSecretaria = null;
 	public static int codigoVacuna = 1, codigoPersonas = 1, codigoCita = 1, codigoMedico = 1, codigoConsulta = 1,
 			codigoHistorial = 1;
 
@@ -163,26 +163,36 @@ public class Clinica {
 			if (consulta.getEnfermedad().getCodigo().equalsIgnoreCase(idEnfermedad)) {
 				count++;
 			}
-		
+
 		}
 		return count;
 
 	}
-	
+
 	// Porcentaje de las enfermedades.
-		public float porcentajeVacunado(String idVacuna) {
-			int count = 0;
-			for (Paciente paciente : misPacientes) {
-				for (Vacuna vacuna : paciente.getMisVacunas()) {
-					if(vacuna.getCodigo().equalsIgnoreCase(idVacuna))
-						count++;
-				}
-			}
-			if (count == 0)
-				return count;
-			else {
-				return misPacientes.size() / (count * misPacientes.size());
+	public float porcentajeVacunado(String idVacuna) {
+		int count = 0;
+		for (Paciente paciente : misPacientes) {
+			for (Vacuna vacuna : paciente.getMisVacunas()) {
+				if (vacuna.getCodigo().equalsIgnoreCase(idVacuna))
+					count++;
 			}
 		}
-	
+		if (count == 0)
+			return count;
+		else {
+			return misPacientes.size() / (count * misPacientes.size());
+		}
+	}
+
+	// Crear secretaria
+	public void crearSecretaria(Secretaria secretaria) {
+		if (miSecretaria == null)
+			this.miSecretaria = secretaria;
+
+	}
+
+	public static Secretaria getMiSecretaria() {
+		return miSecretaria;
+	}
 }

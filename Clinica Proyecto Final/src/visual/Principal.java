@@ -7,6 +7,9 @@ import java.awt.EventQueue;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
+
+import com.sun.org.apache.xalan.internal.xsltc.compiler.util.NamedMethodGenerator;
+
 import javax.swing.JMenuBar;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
@@ -44,7 +47,7 @@ public class Principal extends JFrame {
 		setBounds(100, 100, 647, 442);
 		setLocationRelativeTo(null);
 		dim = super.getToolkit().getScreenSize();
-		// super.setSize(dim.width, dim.height - 100);
+		super.setSize(dim.width, dim.height - 100);
 		setLocationRelativeTo(null);
 
 		JMenuBar menuBar = new JMenuBar();
@@ -61,19 +64,39 @@ public class Principal extends JFrame {
 				medico.setVisible(true);
 			}
 		});
-		mntmNewMenuItem.setEnabled(false);
 		mnMedico.add(mntmNewMenuItem);
 
 		JMenuItem mntmNewMenuItem_1 = new JMenuItem("Listar M\u00E9dico");
+		mntmNewMenuItem_1.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				ListarMedicos medicos = new ListarMedicos();
+				medicos.setModal(true);
+				medicos.setVisible(true);
+			}
+		});
 		mnMedico.add(mntmNewMenuItem_1);
 
 		JMenu mnConsulta = new JMenu("Consulta");
 		menuBar.add(mnConsulta);
 
 		JMenuItem mntmRegistrarConsulta = new JMenuItem("Registrar consulta");
+		mntmRegistrarConsulta.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				RegConsulta consulta = new RegConsulta(null);
+				consulta.setModal(true);
+				consulta.setVisible(true);
+			}
+		});
 		mnConsulta.add(mntmRegistrarConsulta);
 
 		JMenuItem mntmListarConsulta = new JMenuItem("Listar consulta");
+		mntmListarConsulta.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				ListConsulta consulta = new ListConsulta();
+				consulta.setModal(true);
+				consulta.setVisible(true);
+			}
+		});
 		mnConsulta.add(mntmListarConsulta);
 
 		JMenu mnCita = new JMenu("Cita");
@@ -90,6 +113,13 @@ public class Principal extends JFrame {
 		mnCita.add(mntmRegistrarCita);
 
 		JMenuItem mntmListarCita = new JMenuItem("Listar cita");
+		mntmListarCita.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				ListCita cita = new ListCita();
+				cita.setModal(true);
+				cita.setVisible(true);
+			}
+		});
 		mnCita.add(mntmListarCita);
 
 		JMenu mnEnfermedad = new JMenu("Enfermedad");
@@ -142,9 +172,23 @@ public class Principal extends JFrame {
 		menuBar.add(mnSecretaria);
 
 		JMenuItem mntmRegistrarSecretaria = new JMenuItem("Registrar secretaria");
+		mntmRegistrarSecretaria.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				RegSecretaria secretaria = new RegSecretaria();
+				secretaria.setModal(true);
+				secretaria.setVisible(true);
+			}
+		});
 		mnSecretaria.add(mntmRegistrarSecretaria);
 
 		JMenuItem mntmListarSecretaria = new JMenuItem("Listar secretaria");
+		mntmListarSecretaria.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				ListSecretaria secretaria = new ListSecretaria();
+				secretaria.setModal(true);
+				secretaria.setVisible(true);
+			}
+		});
 		mnSecretaria.add(mntmListarSecretaria);
 
 		JMenu mnAdministrador = new JMenu("Administrador");

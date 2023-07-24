@@ -3,14 +3,18 @@ package logico;
 import java.util.ArrayList;
 
 public class Secretaria {
-	 private ArrayList<Cita>misCitas;
-	 private String codigo;
-	 private String nombre;
+	private ArrayList<Cita> misCitas;
+	private String codigo;
+	private String nombre;
+	private String user;
+	private String password;
 
-	public Secretaria(String codigo, String nombre, String descripcion) {
+	public Secretaria(String codigo, String nombre, String user, String password) {
 		super();
 		this.codigo = codigo;
 		this.nombre = nombre;
+		this.user = user;
+		this.password = password;
 	}
 
 	public ArrayList<Cita> getMisCitas() {
@@ -24,5 +28,13 @@ public class Secretaria {
 	public String getNombre() {
 		return nombre;
 	}
-	
+
+	public String getUser() {
+		return user;
+	}
+
+	public String getPassword() {
+		return password;
+	}
+
 }

@@ -2,35 +2,32 @@ package visual;
 
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+import java.util.Calendar;
+import java.util.Date;
 
 import javax.swing.JButton;
 import javax.swing.JDialog;
-import javax.swing.JPanel;
-import javax.swing.border.EmptyBorder;
-import java.awt.event.ActionListener;
-import java.awt.event.ActionEvent;
 import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JRadioButton;
 import javax.swing.JSpinner;
-import javax.swing.SpinnerDateModel;
-import java.util.Date;
-import java.util.Calendar;
 import javax.swing.JTextField;
+import javax.swing.SpinnerDateModel;
+import javax.swing.border.EmptyBorder;
 import javax.swing.border.TitledBorder;
 
 import logico.Cita;
 import logico.Clinica;
 import logico.Medico;
 import logico.Persona;
-import sun.misc.Cleaner;
 
-import javax.swing.JRadioButton;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
-
-public class RegCita extends JDialog {
+public class ListCita extends JDialog {
 
 	private final JPanel contentPanel = new JPanel();
-	private JButton btnRegistrar;
 	private JButton btnCancelar;
 	private JPanel panel;
 	private JSpinner spnFecha;
@@ -47,13 +44,17 @@ public class RegCita extends JDialog {
 	private JLabel lblGenero;
 	private JRadioButton rdbtnMasculino;
 	private JRadioButton rdbtnFemenino;
+	private JButton btnAnterior;
+	private JButton btnSiguiente;
+	private int index = 0;
+	private Cita miCita = null;
 
 	/**
 	 * Launch the application.
 	 */
 	public static void main(String[] args) {
 		try {
-			RegCita dialog = new RegCita();
+			ListCita dialog = new ListCita();
 			dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 			dialog.setVisible(true);
 		} catch (Exception e) {
@@ -64,10 +65,10 @@ public class RegCita extends JDialog {
 	/**
 	 * Create the dialog.
 	 */
-	public RegCita() {
+	public ListCita() {
 		setResizable(false);
-		setTitle("Registrar Cita");
-		setBounds(100, 100, 535, 462);
+		setTitle("Listar Cita");
+		setBounds(100, 100, 535, 515);
 		setLocationRelativeTo(null);
 		getContentPane().setLayout(new BorderLayout());
 		contentPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
@@ -102,6 +103,7 @@ public class RegCita extends JDialog {
 			panelCita.add(lblCodigoDoctor);
 
 			txtCodigoDoctor = new JTextField();
+			txtCodigoDoctor.setEnabled(false);
 			txtCodigoDoctor.addKeyListener(new KeyAdapter() {
 				@Override
 				public void keyTyped(KeyEvent e) {
@@ -119,23 +121,10 @@ public class RegCita extends JDialog {
 			panelCita.add(lblFecha);
 
 			spnFecha = new JSpinner();
+			spnFecha.setEnabled(false);
 			spnFecha.setBounds(294, 37, 155, 26);
 			panelCita.add(spnFecha);
 			spnFecha.setModel(new SpinnerDateModel(new Date(), null, null, Calendar.DAY_OF_YEAR));
-
-			JButton btnBuscar = new JButton("Buscar");
-			btnBuscar.addActionListener(new ActionListener() {
-				public void actionPerformed(ActionEvent e) {
-					Medico medico = Clinica.getInstance().buscarMedicoByCode(txtCodigoDoctor.getText());
-					if (medico != null) {
-						txtCodigoPersona.setEnabled(true);
-						txtEdad.setEnabled(true);
-						txtNombre.setEnabled(true);
-					}
-				}
-			});
-			btnBuscar.setBounds(304, 78, 115, 29);
-			panelCita.add(btnBuscar);
 
 			panelPersona = new JPanel();
 			panelPersona.setBorder(new TitledBorder(null, "Informaci\u00F3n de persona:", TitledBorder.LEADING,
@@ -180,12 +169,12 @@ public class RegCita extends JDialog {
 
 			rdbtnTieneSeguro = new JRadioButton("si");
 			rdbtnTieneSeguro.setEnabled(false);
-			rdbtnTieneSeguro.setBounds(365, 71, 57, 29);
+			rdbtnTieneSeguro.setBounds(365, 71, 45, 29);
 			panelPersona.add(rdbtnTieneSeguro);
 
 			rdbtnNoTieneSeguro = new JRadioButton("No");
 			rdbtnNoTieneSeguro.setEnabled(false);
-			rdbtnNoTieneSeguro.setBounds(424, 71, 65, 29);
+			rdbtnNoTieneSeguro.setBounds(416, 71, 65, 29);
 			panelPersona.add(rdbtnNoTieneSeguro);
 
 			lblGenero = new JLabel("G\u00E9nero:");
@@ -201,6 +190,40 @@ public class RegCita extends JDialog {
 			rdbtnFemenino.setEnabled(false);
 			rdbtnFemenino.setBounds(153, 117, 65, 29);
 			panelPersona.add(rdbtnFemenino);
+
+			btnAnterior = new JButton("Anterior");
+			btnAnterior.setEnabled(false);
+			btnSiguiente = new JButton("Siguiente");
+			btnSiguiente.setEnabled(false);
+
+			btnAnterior.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					if (index > 0) {
+						index--;
+						loadCita();
+						if (index == 0)
+							btnAnterior.setEnabled(false);
+						btnSiguiente.setEnabled(true);
+
+					}
+				}
+			});
+			btnAnterior.setBounds(66, 371, 115, 29);
+			panel.add(btnAnterior);
+			btnSiguiente.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					if (index < Clinica.getInstance().getMisMedicos().size()) {
+						index++;
+						btnAnterior.setEnabled(true);
+						if (index >= Clinica.getInstance().getMisMedicos().size())
+							btnSiguiente.setEnabled(false);
+						loadCita();
+					}
+				}
+			});
+			btnSiguiente.setBounds(342, 371, 115, 29);
+			panel.add(btnSiguiente);
+
 		}
 		{
 			JPanel buttonPane = new JPanel();
@@ -208,44 +231,40 @@ public class RegCita extends JDialog {
 			buttonPane.setLayout(new FlowLayout(FlowLayout.RIGHT));
 			getContentPane().add(buttonPane, BorderLayout.SOUTH);
 			{
-				btnRegistrar = new JButton("Registrar");
-				btnRegistrar.addActionListener(new ActionListener() {
-					public void actionPerformed(ActionEvent e) {
-						if (Clinica.getMiSecretaria() != null) {
-							boolean tieneSeguro;
-							if (rdbtnTieneSeguro.isSelected())
-								tieneSeguro = true;
-							else
-								tieneSeguro = false;
-
-							char genero;
-							if (rdbtnMasculino.isSelected())
-								genero = 'm';
-							else {
-								genero = 'f';
-							}
-							Persona persona = new Persona(txtCodigoPersona.getText(), txtNombre.getText(),
-									Integer.parseInt(txtEdad.getText()), tieneSeguro, genero);
-							Cita cita = new Cita(txtCodigoCita.getText(), txtCodigoDoctor.getText(), persona, (Date) spnFecha.getValue());
-							Clinica.getMiSecretaria().getMisCitas().add(cita);
-							Cleaner();
-						}
-					}
-				});
-				btnRegistrar.setEnabled(false);
-				btnRegistrar.setActionCommand("OK");
-				buttonPane.add(btnRegistrar);
-				getRootPane().setDefaultButton(btnRegistrar);
-			}
-			{
 				btnCancelar = new JButton("Cancelar");
 				btnCancelar.addActionListener(new ActionListener() {
+
 					public void actionPerformed(ActionEvent e) {
 						dispose();
 					}
+
 				});
 				btnCancelar.setActionCommand("Cancel");
 				buttonPane.add(btnCancelar);
+			}
+		}
+	}
+
+	public void loadCita() {
+		if (Clinica.getInstance().getMisMedicos().size() > 0) {
+			if (Clinica.getMiSecretaria() != null) {
+				miCita = Clinica.getMiSecretaria().getMisCitas().get(index);
+				txtCodigoCita.setText(miCita.getCodCita());
+				txtCodigoDoctor.setText(miCita.getIdMedico());
+				txtCodigoPersona.setText(miCita.getPersona().getCodigo());
+				txtEdad.setText(Integer.toString(miCita.getPersona().getEdad()));
+				txtNombre.setText(miCita.getPersona().getNombre());
+				spnFecha.setToolTipText(miCita.getFecha().toString());
+				if (miCita.getPersona().getGenero() == 'm') {
+					rdbtnMasculino.setEnabled(true);
+				} else {
+					rdbtnFemenino.setEnabled(true);
+				}
+				if (miCita.getPersona().isSeguroMedico()) {
+					rdbtnTieneSeguro.setEnabled(true);
+				} else {
+					rdbtnNoTieneSeguro.setEnabled(true);
+				}
 			}
 		}
 	}

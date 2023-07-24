@@ -10,6 +10,7 @@ import javax.swing.border.EmptyBorder;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 
 import java.util.ArrayList;
 import javax.swing.JTextField;
@@ -29,6 +30,7 @@ import javax.swing.JTable;
 import javax.swing.ScrollPaneConstants;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import javax.swing.border.LineBorder;
 
 public class RegMedico extends JDialog {
 
@@ -58,6 +60,7 @@ public class RegMedico extends JDialog {
 	private JLabel lblContrasenna;
 	private JTextField txtContrasenna;
 	private ArrayList<Enfermedad> enfermedaCustodiadas = new ArrayList<Enfermedad>();
+	private ArrayList<Enfermedad> enfermedaRegistradas = new ArrayList<Enfermedad>();
 	private int indexCustodiada;
 	private int indexRegistrada;
 
@@ -80,7 +83,7 @@ public class RegMedico extends JDialog {
 	public RegMedico() {
 		setResizable(false);
 		setTitle("Registrar M\u00E9dico");
-		setBounds(100, 100, 623, 563);
+		setBounds(100, 100, 652, 575);
 		setLocationRelativeTo(null);
 		getContentPane().setLayout(new BorderLayout());
 		contentPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
@@ -96,7 +99,7 @@ public class RegMedico extends JDialog {
 			panelDatosMedicos.setBorder(
 					new TitledBorder(UIManager.getBorder("TitledBorder.border"), "Informaci\u00F3n de m\u00E9dico",
 							TitledBorder.LEADING, TitledBorder.TOP, null, new Color(0, 0, 0)));
-			panelDatosMedicos.setBounds(15, 16, 580, 142);
+			panelDatosMedicos.setBounds(15, 16, 592, 142);
 			panel.add(panelDatosMedicos);
 			panelDatosMedicos.setLayout(null);
 
@@ -120,7 +123,7 @@ public class RegMedico extends JDialog {
 				@Override
 				public void keyTyped(KeyEvent e) {
 					char key = e.getKeyChar();
-					if (!Character.isDigit(key))
+					if (Character.isDigit(key))
 						e.consume();
 				}
 			});
@@ -146,36 +149,9 @@ public class RegMedico extends JDialog {
 			panelDatosMedicos.add(txtTelefono);
 			txtTelefono.setColumns(10);
 
-			panelPersona = new JPanel();
-			panelPersona.setBorder(new TitledBorder(UIManager.getBorder("TitledBorder.border"),
-					"Enfermedades a custodiar", TitledBorder.LEADING, TitledBorder.TOP, null, new Color(0, 0, 0)));
-			panelPersona.setBounds(15, 295, 231, 158);
-			panel.add(panelPersona);
-			panelPersona.setLayout(null);
-
-			JScrollPane scrollPane = new JScrollPane();
-			scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
-			scrollPane.setBounds(15, 28, 201, 114);
-			panelPersona.add(scrollPane);
-
-			tableEnfCust = new JTable();
-			tableEnfCust.addMouseListener(new MouseAdapter() {
-				@Override
-				public void mouseClicked(MouseEvent e) {
-					indexCustodiada = tableEnfCust.getSelectedRow();
-					if (indexCustodiada >= 0)
-						btnDer.setEnabled(true);
-					else {
-						btnDer.setEnabled(false);
-					}
-				}
-			});
-
 			enfermedadesCustodiadasModel = new DefaultTableModel();
 			String[] columnNames = { "Código", "Nombre", "Sintomas" };
 			enfermedadesCustodiadasModel.setColumnIdentifiers(columnNames);
-			tableEnfCust.setModel(enfermedadesCustodiadasModel);
-			scrollPane.setViewportView(tableEnfCust);
 
 			panel_1 = new JPanel();
 			panel_1.setLayout(null);
@@ -207,41 +183,75 @@ public class RegMedico extends JDialog {
 			tableRegistradas.setModel(enfermedadesRegistradasModel);
 			scrollPane_1.setViewportView(tableRegistradas);
 
-			btnIzq = new JButton("<");
-			btnIzq.addActionListener(new ActionListener() {
-				public void actionPerformed(ActionEvent e) {
-					enfermedaCustodiadas.add(Clinica.getInstance()
-							.buscarEnfermedadByCode((String) tableRegistradas.getValueAt(indexRegistrada, 0)));
-					LoadEnfermedades();
-				}
-			});
-			btnIzq.setEnabled(false);
-			btnIzq.setBounds(255, 328, 97, 25);
-			panel.add(btnIzq);
-
-			btnDer = new JButton(">");
-			btnDer.addActionListener(new ActionListener() {
-				public void actionPerformed(ActionEvent e) {
-					enfermedaCustodiadas.remove(indexCustodiada);
-					LoadEnfermedades();
-				}
-			});
-			btnDer.setEnabled(false);
-			btnDer.setBounds(255, 389, 97, 25);
-			panel.add(btnDer);
-
 			panelEnfermedades = new JPanel();
 			panelEnfermedades.setBorder(new TitledBorder(UIManager.getBorder("TitledBorder.border"), "Enfermedades",
 					TitledBorder.LEADING, TitledBorder.TOP, null, new Color(0, 0, 0)));
-			panelEnfermedades.setBounds(15, 269, 580, 184);
+			panelEnfermedades.setBounds(15, 269, 592, 196);
 			panel.add(panelEnfermedades);
 			panelEnfermedades.setLayout(null);
+			
+						btnIzq = new JButton("<");
+						btnIzq.setBounds(252, 61, 81, 25);
+						panelEnfermedades.add(btnIzq);
+						btnIzq.addActionListener(new ActionListener() {
+							public void actionPerformed(ActionEvent e) {
+								Enfermedad enfermedad = Clinica.getInstance()
+										.buscarEnfermedadByCode((String) tableRegistradas.getValueAt(indexRegistrada, 0));
+								if (!isEnfermedadCustodiada(enfermedad)) {
+									enfermedaCustodiadas.add(enfermedad);
+									LoadEnfermedades();
+									btnIzq.setEnabled(false);
+								}
+							}
+						});
+						btnIzq.setEnabled(false);
+						
+									btnDer = new JButton(">");
+									btnDer.setBounds(252, 120, 81, 25);
+									panelEnfermedades.add(btnDer);
+									btnDer.addActionListener(new ActionListener() {
+										public void actionPerformed(ActionEvent e) {
+											enfermedaRegistradas.add(Clinica.getInstance()
+													.buscarEnfermedadByCode((String) tableEnfCust.getValueAt(indexCustodiada, 0)));
+											enfermedaCustodiadas.remove(indexCustodiada);
+											LoadEnfermedades();
+											btnDer.setEnabled(false);
+										}
+									});
+									btnDer.setEnabled(false);
+									
+												panelPersona = new JPanel();
+												panelPersona.setBounds(12, 25, 231, 158);
+												panelEnfermedades.add(panelPersona);
+												panelPersona.setBorder(new TitledBorder(UIManager.getBorder("TitledBorder.border"),
+														"Enfermedades a custodiar", TitledBorder.LEADING, TitledBorder.TOP, null, new Color(0, 0, 0)));
+												panelPersona.setLayout(null);
+												
+															JScrollPane scrollPane = new JScrollPane();
+															scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+															scrollPane.setBounds(15, 28, 201, 114);
+															panelPersona.add(scrollPane);
+															
+																		tableEnfCust = new JTable();
+																		tableEnfCust.addMouseListener(new MouseAdapter() {
+																			@Override
+																			public void mouseClicked(MouseEvent e) {
+																				indexCustodiada = tableEnfCust.getSelectedRow();
+																				if (indexCustodiada >= 0)
+																					btnDer.setEnabled(true);
+																				else {
+																					btnDer.setEnabled(false);
+																				}
+																			}
+																		});
+																		tableEnfCust.setModel(enfermedadesCustodiadasModel);
+																		scrollPane.setViewportView(tableEnfCust);
 
 			panelUsuario = new JPanel();
 			panelUsuario.setLayout(null);
 			panelUsuario
 					.setBorder(new TitledBorder(null, "Usuario", TitledBorder.LEADING, TitledBorder.TOP, null, null));
-			panelUsuario.setBounds(15, 162, 580, 91);
+			panelUsuario.setBounds(15, 162, 592, 91);
 			panel.add(panelUsuario);
 
 			txtUser = new JTextField();
@@ -273,18 +283,26 @@ public class RegMedico extends JDialog {
 				btnRegistrar = new JButton("Registrar");
 				btnRegistrar.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent e) {
-						Medico medico = new Medico(txtCodigoMedico.getText(), txtNombre.getText(),
-								txtTelefono.getText(), txtEspecializacion.getText(), txtUser.getText(),
-								txtContrasenna.getText());
+						//validar campos!
+						if (!(txtCodigoMedico.getText().isEmpty() || txtContrasenna.getText().isEmpty()
+								|| txtEspecializacion.getText().isEmpty() || txtNombre.getText().isEmpty()
+								|| txtTelefono.getText().isEmpty() || txtUser.getText().isEmpty())) {
+							//Hacer el registro
+							Medico medico = new Medico(txtCodigoMedico.getText(), txtNombre.getText(),
+									txtTelefono.getText(), txtEspecializacion.getText(), txtUser.getText(),
+									txtContrasenna.getText());
 
-						for (Enfermedad enfermedad : enfermedaCustodiadas)
-							medico.getMisEnfermedades().add(enfermedad);
+							for (Enfermedad enfermedad : enfermedaCustodiadas)
+								medico.getMisEnfermedades().add(enfermedad);
 
-						Clinica.getInstance().getMisMedicos().add(medico);
-
+							Clinica.getInstance().getMisMedicos().add(medico);
+						}else {
+							JOptionPane.showMessageDialog(null,
+									"Por favor, complete todos los campos antes de registrar el Medico!",
+									"Campos incompletos", JOptionPane.ERROR_MESSAGE);
+						}
 					}
 				});
-				btnRegistrar.setEnabled(false);
 				btnRegistrar.setActionCommand("OK");
 				buttonPane.add(btnRegistrar);
 				getRootPane().setDefaultButton(btnRegistrar);
@@ -305,14 +323,18 @@ public class RegMedico extends JDialog {
 
 	public void LoadEnfermedades() {
 		enfermedadesRegistradasModel.setRowCount(0);
+		enfermedadesCustodiadasModel.setRowCount(0);
 		row = new Object[tableRegistradas.getColumnCount()];
 
+		// Cargar las enfermedades registradas
 		for (Enfermedad enfermedad : Clinica.getInstance().getMisEnfermedades()) {
 			row[0] = enfermedad.getCodigo();
 			row[1] = enfermedad.getNombre();
 			row[2] = enfermedad.getSintomas();
 			enfermedadesRegistradasModel.addRow(row);
 		}
+
+		// Cargar las enfermedades custodiadas
 		row = new Object[tableEnfCust.getColumnCount()];
 		for (Enfermedad enfermedad : enfermedaCustodiadas) {
 			row[0] = enfermedad.getCodigo();
@@ -320,7 +342,17 @@ public class RegMedico extends JDialog {
 			row[2] = enfermedad.getSintomas();
 			enfermedadesCustodiadasModel.addRow(row);
 		}
+	}
 
+	// Método para verificar si una enfermedad ya está en la lista de enfermedades
+	// custodiadas
+	private boolean isEnfermedadCustodiada(Enfermedad enfermedad) {
+		for (Enfermedad enf : enfermedaCustodiadas) {
+			if (enf.getCodigo().equals(enfermedad.getCodigo())) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	protected void Cleaner() {
