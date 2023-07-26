@@ -1,8 +1,9 @@
 package logico;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
-public class Enfermedad {
+public class Enfermedad implements Serializable {
 	private String codigo;
 	private String nombre;
 	private String sintomas;

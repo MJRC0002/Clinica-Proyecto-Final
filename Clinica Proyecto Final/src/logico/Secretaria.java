@@ -1,8 +1,9 @@
 package logico;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
-public class Secretaria {
+public class Secretaria implements Serializable{
 	private ArrayList<Cita> misCitas;
 	private String codigo;
 	private String nombre;

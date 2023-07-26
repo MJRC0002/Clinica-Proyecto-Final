@@ -8,12 +8,22 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 
-import com.sun.org.apache.xalan.internal.xsltc.compiler.util.NamedMethodGenerator;
+import logico.Clinica;
+import logico.Medico;
+import sun.security.jgss.LoginConfigImpl;
 
 import javax.swing.JMenuBar;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import java.awt.event.ActionListener;
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.net.Socket;
+import java.net.UnknownHostException;
 import java.awt.event.ActionEvent;
 
 public class Principal extends JFrame {
@@ -28,7 +38,7 @@ public class Principal extends JFrame {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
-					Principal frame = new Principal();
+					Principal frame = new Principal(null);
 					frame.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -40,7 +50,7 @@ public class Principal extends JFrame {
 	/**
 	 * Create the frame.
 	 */
-	public Principal() {
+	public Principal(Object usuario) {
 		setTitle("Clinica");
 		setResizable(false);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -196,6 +206,43 @@ public class Principal extends JFrame {
 
 		JMenu mnRespaldo = new JMenu("Respaldo");
 		menuBar.add(mnRespaldo);
+
+		JMenuItem mntmNewMenuItem_2 = new JMenuItem("Respaldar");
+		mntmNewMenuItem_2.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				Socket sfd = null;
+				try {
+					sfd = new Socket("localhost", 7007);
+					DataInputStream EntradaSocket = new DataInputStream(new BufferedInputStream(sfd.getInputStream()));
+					DataOutputStream SalidaSocket = new DataOutputStream(
+							new BufferedOutputStream(sfd.getOutputStream()));
+
+					try (FileInputStream fis = new FileInputStream("laclinica10.dat")) {
+						byte[] buffer = new byte[4096];
+						int bytesRead;
+						while ((bytesRead = fis.read(buffer)) != -1) {
+							SalidaSocket.write(buffer, 0, bytesRead);
+						}
+						SalidaSocket.flush();
+						System.out.println("Respaldo enviado correctamente.");
+					} catch (IOException eo) {
+						System.out.println("Error al enviar el respaldo: " + eo.getMessage());
+					}
+				} catch (UnknownHostException uhe) {
+					System.out.println("No se puede acceder al servidor.");
+				} catch (IOException ioe) {
+					System.out.println("Comunicación rechazada.");
+				} finally {
+					try {
+						if (sfd != null)
+							sfd.close();
+					} catch (IOException eo) {
+						eo.printStackTrace();
+					}
+				}
+			}
+		});
+		mnRespaldo.add(mntmNewMenuItem_2);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		contentPane.setLayout(new BorderLayout(0, 0));

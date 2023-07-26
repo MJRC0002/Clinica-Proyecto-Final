@@ -1,12 +1,13 @@
 package logico;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
 import com.sun.org.apache.xml.internal.resolver.helpers.PublicId;
 
 import javafx.scene.control.IndexRange;
 
-public class Clinica {
+public class Clinica implements Serializable {
 	private ArrayList<Medico> misMedicos;
 	private ArrayList<Paciente> misPacientes;
 	private ArrayList<Vacuna> misVacunas;
@@ -14,6 +15,7 @@ public class Clinica {
 	private ArrayList<Consulta> misConsultas;
 	private static Clinica miClinica = null;
 	private static Secretaria miSecretaria = null;
+	private static Administrador miAdministrador = null;
 	public static int codigoVacuna = 1, codigoPersonas = 1, codigoCita = 1, codigoMedico = 1, codigoConsulta = 1,
 			codigoHistorial = 1;
 
@@ -28,7 +30,7 @@ public class Clinica {
 
 	public static Clinica getInstance() {
 		if (miClinica == null) {
-			miClinica = new Clinica();
+			setMiClinica(new Clinica());
 		}
 		return miClinica;
 	}
@@ -191,8 +193,40 @@ public class Clinica {
 			this.miSecretaria = secretaria;
 
 	}
+	
+	public void crearAdministrador(Administrador admin)
+	{
+		if(getMiAdministrador() == null)
+			miAdministrador = admin;
+	}
 
 	public static Secretaria getMiSecretaria() {
 		return miSecretaria;
 	}
+	
+	public Object loginTipo(String usuario, String contrasenna) {
+		
+		Object aux = null;
+		for (Medico doc : misMedicos) {
+			if(doc.getUsuario().equalsIgnoreCase(usuario) && doc.getContrasenna().equalsIgnoreCase(contrasenna))
+				return aux = doc;
+		}
+		
+		if(miSecretaria.getUser().equalsIgnoreCase(usuario) && miSecretaria.getPassword().equalsIgnoreCase(contrasenna))
+			aux = miSecretaria;
+		else if(getMiAdministrador().getUser().equalsIgnoreCase(usuario) && getMiAdministrador().getPassword().equalsIgnoreCase(contrasenna))
+			aux = getMiAdministrador();
+			
+			
+		return aux;
+	}
+
+	public static Administrador getMiAdministrador() {
+		return miAdministrador;
+	}
+
+	public static void setMiClinica(Clinica miClinica) {
+		Clinica.miClinica = miClinica;
+	}
+	
 }

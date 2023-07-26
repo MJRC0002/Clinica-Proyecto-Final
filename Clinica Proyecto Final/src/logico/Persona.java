@@ -1,6 +1,8 @@
 package logico;
 
-public class Persona {
+import java.io.Serializable;
+
+public class Persona implements Serializable {
 	private String codigo;
 	private String nombre;
 	private int edad;

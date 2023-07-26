@@ -1,8 +1,9 @@
 package logico;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
-public class Medico {
+public class Medico implements Serializable {
 	private String codigo;
 	private String nombre;
 	private String telefono;

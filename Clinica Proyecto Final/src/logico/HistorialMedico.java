@@ -1,8 +1,9 @@
 package logico;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
-public class HistorialMedico {
+public class HistorialMedico implements Serializable{
 	private ArrayList<Consulta> misConsultasRelevantes;
 
 	public HistorialMedico() {
