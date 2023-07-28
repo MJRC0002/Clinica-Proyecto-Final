@@ -9,7 +9,6 @@ import java.util.Calendar;
 import java.util.Date;
 
 import javax.swing.JButton;
-import javax.swing.JCheckBox;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -24,13 +23,9 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.border.TitledBorder;
 import javax.swing.table.DefaultTableModel;
 
-import logico.Cita;
 import logico.Clinica;
 import logico.Consulta;
 import logico.Enfermedad;
-import logico.HistorialMedico;
-import logico.Paciente;
-import logico.Persona;
 import logico.Vacuna;
 
 public class ListConsulta extends JDialog {
@@ -328,11 +323,12 @@ public class ListConsulta extends JDialog {
 				buttonPane.add(btnCancelar);
 			}
 		}
-		loadEnfermedades();
+		loadConsulta();
 	}
 
 	public void loadConsulta() {
-		if (Clinica.getInstance().getMisConsultas().size() > 0) {
+		int size = Clinica.getInstance().getMisConsultas().size();
+		if (size > 0 && index < size ) {
 			miConsulta = Clinica.getInstance().getMisConsultas().get(index);
 			txtCodigoConsulta.setText(miConsulta.getCodConsulta());
 			txtCodigoPaciente.setText(miConsulta.getPaciente().getCodigo());
@@ -367,6 +363,12 @@ public class ListConsulta extends JDialog {
 			} else {
 				rdbtnNoEstarEnfermo.setEnabled(true);
 			}
+			loadEnfermedades();
+			if (index < size-1) 
+				btnSiguiente.setEnabled(true);
+			else 
+				btnSiguiente.setEnabled(false);
+			
 		}
 
 	}
@@ -375,10 +377,9 @@ public class ListConsulta extends JDialog {
 		enfermedadesRegistradasModel.setRowCount(0);
 		row = new Object[table.getColumnCount()];
 
-		for (Vacuna v : Clinica.getInstance().getMisVacunas()) {
-			row[0] = v.getCodigo();
-			row[1] = v.getNombre();
-			row[2] = v.getDescripcion();
+		for (Enfermedad enfermedad : Clinica.getInstance().getMisEnfermedades()) {
+			row[0] = enfermedad.getCodigo();
+			row[1] = enfermedad.getNombre();
 			enfermedadesRegistradasModel.addRow(row);
 		}
 	}

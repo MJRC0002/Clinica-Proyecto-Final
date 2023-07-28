@@ -301,35 +301,22 @@ public class Principal extends JFrame {
 		JMenuItem mntmNewMenuItem_2 = new JMenuItem("Respaldar");
 		mntmNewMenuItem_2.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				Socket sfd = null;
-				try {
-					sfd = new Socket("localhost", 8000);
-					DataOutputStream SalidaSocket = new DataOutputStream(
-							new BufferedOutputStream(sfd.getOutputStream()));
+				 try (Socket sfd = new Socket("localhost", 8016);
+			             FileInputStream fis = new FileInputStream("Clinica.dat");
+			             BufferedOutputStream bos = new BufferedOutputStream(sfd.getOutputStream())) {
 
-					try (FileInputStream fis = new FileInputStream("Clinica.dat")) {
-						byte[] buffer = new byte[4096];
-						int bytesRead;
-						while ((bytesRead = fis.read(buffer)) != -1) {
-							SalidaSocket.write(buffer, 0, bytesRead);
-						}
-						SalidaSocket.flush();
-						System.out.println("Respaldo enviado correctamente.");
-					} catch (IOException eo) {
-						System.out.println("Error al enviar el respaldo: " + eo.getMessage());
-					}
-				} catch (UnknownHostException uhe) {
-					System.out.println("No se puede acceder al servidor.");
-				} catch (IOException ioe) {
-					System.out.println("Comunicación rechazada.");
-				} finally {
-					try {
-						if (sfd != null)
-							sfd.close();
-					} catch (IOException eo) {
-						eo.printStackTrace();
-					}
-				}
+			            byte[] buffer = new byte[4096];
+			            int bytesRead;
+			            while ((bytesRead = fis.read(buffer)) != -1) {
+			                bos.write(buffer, 0, bytesRead);
+			            }
+			            bos.flush();
+			            System.out.println("Respaldo enviado correctamente.");
+			        } catch (UnknownHostException uhe) {
+			            System.out.println("No se puede acceder al servidor.");
+			        } catch (IOException ioe) {
+			            System.out.println("Comunicación rechazada.");
+			        }
 			}
 		});
 		mnRespaldo.add(mntmNewMenuItem_2);

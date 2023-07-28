@@ -6,17 +6,15 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
-import java.util.Calendar;
-import java.util.Date;
+import java.text.SimpleDateFormat;
 
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
-import javax.swing.JSpinner;
 import javax.swing.JTextField;
-import javax.swing.SpinnerDateModel;
+
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.TitledBorder;
 
@@ -28,7 +26,6 @@ public class ListCita extends JDialog {
 	private final JPanel contentPanel = new JPanel();
 	private JButton btnCancelar;
 	private JPanel panel;
-	private JSpinner spnFecha;
 	private JTextField txtCodigoCita;
 	private JTextField txtCodigoDoctor;
 	private JTextField txtNombre;
@@ -46,8 +43,9 @@ public class ListCita extends JDialog {
 	private JButton btnSiguiente;
 	private int index = 0, sizeCitas = Clinica.getInstance().getMiSecretaria().getMisCitas().size();
 	private Cita miCita = null;
+	private JButton btnRegistrarConsulta;
+	private JTextField txtFecha;
 
-	
 	public ListCita(boolean hacerConsulta) {
 		setResizable(false);
 		setTitle("Listar Cita");
@@ -102,11 +100,11 @@ public class ListCita extends JDialog {
 			lblFecha.setBounds(244, 40, 53, 20);
 			panelCita.add(lblFecha);
 
-			spnFecha = new JSpinner();
-			spnFecha.setEnabled(false);
-			spnFecha.setBounds(294, 37, 155, 26);
-			panelCita.add(spnFecha);
-			spnFecha.setModel(new SpinnerDateModel(new Date(), null, null, Calendar.DAY_OF_YEAR));
+			txtFecha = new JTextField();
+			txtFecha.setEditable(false);
+			txtFecha.setBounds(297, 37, 146, 26);
+			panelCita.add(txtFecha);
+			txtFecha.setColumns(10);
 
 			panelPersona = new JPanel();
 			panelPersona.setBorder(new TitledBorder(null, "Informaci\u00F3n de persona:", TitledBorder.LEADING,
@@ -185,7 +183,6 @@ public class ListCita extends JDialog {
 						loadCita();
 						if (index == 0)
 							btnAnterior.setEnabled(false);
-						btnSiguiente.setEnabled(true);
 
 					}
 				}
@@ -197,14 +194,29 @@ public class ListCita extends JDialog {
 					if (index < Clinica.getInstance().getMisMedicos().size()) {
 						index++;
 						btnAnterior.setEnabled(true);
-						if (index >= Clinica.getInstance().getMisMedicos().size())
-							btnSiguiente.setEnabled(false);
 						loadCita();
 					}
 				}
 			});
 			btnSiguiente.setBounds(342, 371, 115, 29);
 			panel.add(btnSiguiente);
+
+			if (hacerConsulta) {
+				btnRegistrarConsulta = new JButton("Registrar consulta");
+				btnRegistrarConsulta.addActionListener(new ActionListener() {
+					public void actionPerformed(ActionEvent e) {
+						RegConsulta regConsulta = new RegConsulta(
+								Clinica.getInstance().getMiSecretaria().getMisCitas().get(index));
+						dispose();
+
+						regConsulta.setModal(true);
+						regConsulta.setVisible(true);
+					}
+				});
+				btnRegistrarConsulta.setEnabled(true);
+				btnRegistrarConsulta.setBounds(182, 371, 159, 29);
+				panel.add(btnRegistrarConsulta);
+			}
 
 		}
 		{
@@ -225,6 +237,7 @@ public class ListCita extends JDialog {
 				buttonPane.add(btnCancelar);
 			}
 		}
+		loadCita();
 	}
 
 	public void loadCita() {
@@ -236,24 +249,23 @@ public class ListCita extends JDialog {
 			txtCodigoPersona.setText(miCita.getPersona().getCodigo());
 			txtEdad.setText(Integer.toString(miCita.getPersona().getEdad()));
 			txtNombre.setText(miCita.getPersona().getNombre());
-			spnFecha.setToolTipText(miCita.getFecha().toString());
-			
-			if (miCita.getPersona().getGenero() == 'm') 
+			SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm dd/MM/yyyy");
+			txtFecha.setText(dateFormat.format(miCita.getFecha()));
+			if (miCita.getPersona().getGenero() == 'm')
 				rdbtnMasculino.setEnabled(true);
-			else 
+			else
 				rdbtnFemenino.setEnabled(true);
-			
-			if (miCita.getPersona().isSeguroMedico()) 
+
+			if (miCita.getPersona().isSeguroMedico())
 				rdbtnTieneSeguro.setEnabled(true);
-			else 
+			else
 				rdbtnNoTieneSeguro.setEnabled(true);
-			
-			if (index < sizeCitas-1)
+
+			if (index < sizeCitas - 1)
 				btnSiguiente.setEnabled(true);
-			else 
+			else
 				btnSiguiente.setEnabled(false);
-			
+
 		}
 	}
-
 }

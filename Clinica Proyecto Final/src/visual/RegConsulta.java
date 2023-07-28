@@ -129,7 +129,6 @@ public class RegConsulta extends JDialog {
 			panelConsulta.add(lblFecha);
 
 			spnFecha = new JSpinner();
-			spnFecha.setEnabled(false);
 			spnFecha.setBounds(294, 37, 183, 26);
 			panelConsulta.add(spnFecha);
 			spnFecha.setModel(new SpinnerDateModel(new Date(), null, null, Calendar.DAY_OF_YEAR));
@@ -262,12 +261,10 @@ public class RegConsulta extends JDialog {
 			panelPersona.add(lblEnfermo);
 
 			rdbtnEstaEnfermo = new JRadioButton("Si");
-			rdbtnEstaEnfermo.setEnabled(false);
 			rdbtnEstaEnfermo.setBounds(94, 158, 57, 29);
 			panelPersona.add(rdbtnEstaEnfermo);
 
 			rdbtnNoEstarEnfermo = new JRadioButton("No");
-			rdbtnNoEstarEnfermo.setEnabled(false);
 			rdbtnNoEstarEnfermo.setBounds(153, 158, 65, 29);
 			panelPersona.add(rdbtnNoEstarEnfermo);
 
@@ -310,7 +307,6 @@ public class RegConsulta extends JDialog {
 				btnRegistrar = new JButton("Registrar");
 				btnRegistrar.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent e) {
-						if (Clinica.getInstance().getMiSecretaria() != null) {
 							boolean tieneSeguro;
 							if (rdbtnTieneSeguro.isSelected())
 								tieneSeguro = true;
@@ -347,10 +343,10 @@ public class RegConsulta extends JDialog {
 								historial.getMisConsultasRelevantes().add(consulta);
 							}
 							Clinica.getInstance().getMisConsultas().add(consulta);
-						}
+							dispose();
+						
 					}
 				});
-				btnRegistrar.setEnabled(false);
 				btnRegistrar.setActionCommand("OK");
 				buttonPane.add(btnRegistrar);
 				getRootPane().setDefaultButton(btnRegistrar);

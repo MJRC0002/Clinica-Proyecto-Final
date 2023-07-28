@@ -15,7 +15,8 @@ import javax.swing.border.EmptyBorder;
 
 import logico.Administrador;
 import logico.Clinica;
-
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
@@ -23,11 +24,12 @@ import javax.swing.JButton;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 
-public class login extends JFrame {
+public class login extends JFrame implements KeyListener {
 
 	private JPanel contentPane;
 	private JTextField txtUser;
 	private JTextField txtPassword;
+	private JButton btnLogin;
 
 	/**
 	 * Launch the application.
@@ -115,28 +117,48 @@ public class login extends JFrame {
 		panel.add(txtPassword);
 		txtPassword.setColumns(10);
 
-		JButton btnLogin = new JButton("Login");
+		btnLogin = new JButton("Login");
 		btnLogin.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				Object aux = null;
-					if ((aux = Clinica.getInstance().loginTipo(txtUser.getText(), txtPassword.getText())) != null) {
-						Principal frame = new Principal(aux);
-						dispose();
-						frame.setVisible(true);
-					}
-					else {
-						JOptionPane.showMessageDialog(null,
-								"Usuario o contraseña inconrrecta, favor de revisar!",
-								"Usuario no encontrado", JOptionPane.ERROR_MESSAGE);
-						txtPassword.setText("");
-						txtUser.setText("");
-					}
+				if ((aux = Clinica.getInstance().loginTipo(txtUser.getText(), txtPassword.getText())) != null) {
+					Principal frame = new Principal(aux);
+					dispose();
+					frame.setVisible(true);
+				} else {
+					JOptionPane.showMessageDialog(null, "Usuario o contraseña inconrrecta, favor de revisar!",
+							"Usuario no encontrado", JOptionPane.ERROR_MESSAGE);
+					txtPassword.setText("");
+					txtUser.setText("");
+				}
 				;
 
 			}
 		});
 		btnLogin.setBounds(37, 175, 89, 23);
 		panel.add(btnLogin);
+		txtUser.addKeyListener(this);
+		txtPassword.addKeyListener(this);
+
+	}
+
+	@Override
+	public void keyTyped(KeyEvent e) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void keyPressed(KeyEvent e) {
+		if (e.getKeyCode() == KeyEvent.VK_ENTER) {
+			btnLogin.doClick();
+		}
+	}
+
+	@Override
+	public void keyReleased(KeyEvent e) {
+		// TODO Auto-generated method stub
+
 	}
 
 }
