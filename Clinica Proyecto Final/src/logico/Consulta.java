@@ -3,6 +3,8 @@ package logico;
 import java.io.Serializable;
 
 public class Consulta implements Serializable{
+	private static final long serialVersionUID = 1L;
+
 	private String codConsulta;
 	private Paciente paciente;
 	private Enfermedad enfermedad;

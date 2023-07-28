@@ -25,8 +25,6 @@ import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import javax.swing.UIManager;
 import java.awt.Color;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 
@@ -53,22 +51,6 @@ public class ListarMedicos extends JDialog {
 	private JTable tableEnfermedades;
 	private JTable tableCitas;
 
-	/**
-	 * Launch the application.
-	 */
-	public static void main(String[] args) {
-		try {
-			ListarMedicos dialog = new ListarMedicos();
-			dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
-			dialog.setVisible(true);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
-
-	/**
-	 * Create the dialog.
-	 */
 	public ListarMedicos() {
 		setTitle("Listado de m\u00E9dicos");
 		setBounds(100, 100, 905, 572);
@@ -139,8 +121,6 @@ public class ListarMedicos extends JDialog {
 						loadMedico();
 						if (index == 0)
 							btnAnterior.setEnabled(false);
-						btnSiguiente.setEnabled(true);
-
 					}
 				}
 			});
@@ -151,8 +131,6 @@ public class ListarMedicos extends JDialog {
 					if (index < Clinica.getInstance().getMisMedicos().size()) {
 						index++;
 						btnAnterior.setEnabled(true);
-						if (index >= Clinica.getInstance().getMisMedicos().size())
-							btnSiguiente.setEnabled(false);
 						loadMedico();
 					}
 				}
@@ -161,7 +139,8 @@ public class ListarMedicos extends JDialog {
 			panel.add(btnSiguiente);
 
 			JPanel panelPaciente = new JPanel();
-			panelPaciente.setBorder(new TitledBorder(UIManager.getBorder("TitledBorder.border"), "Pacientes", TitledBorder.LEADING, TitledBorder.TOP, null, new Color(0, 0, 0)));
+			panelPaciente.setBorder(new TitledBorder(UIManager.getBorder("TitledBorder.border"), "Pacientes",
+					TitledBorder.LEADING, TitledBorder.TOP, null, new Color(0, 0, 0)));
 			panelPaciente.setBounds(15, 247, 430, 159);
 			panel.add(panelPaciente);
 			panelPaciente.setLayout(new BorderLayout(0, 0));
@@ -172,41 +151,43 @@ public class ListarMedicos extends JDialog {
 
 			tablePacientes = new JTable();
 			pacienteModel = new DefaultTableModel();
-			String letrero[] = { "Codigo", "Nombre", "Edad", "Seguro Medico", "Genero"};
+			String letrero[] = { "Codigo", "Nombre", "Edad", "Seguro Medico", "Genero" };
 			pacienteModel.setColumnIdentifiers(letrero);
 			tablePacientes.setModel(pacienteModel);
 			scrollPane.setViewportView(tablePacientes);
-			
+
 			JPanel panelEnfermedad = new JPanel();
-			panelEnfermedad.setBorder(new TitledBorder(UIManager.getBorder("TitledBorder.border"), "Enfermedades bajo vigilancia", TitledBorder.LEADING, TitledBorder.TOP, null, new Color(0, 0, 0)));
+			panelEnfermedad.setBorder(new TitledBorder(UIManager.getBorder("TitledBorder.border"),
+					"Enfermedades bajo vigilancia", TitledBorder.LEADING, TitledBorder.TOP, null, new Color(0, 0, 0)));
 			panelEnfermedad.setBounds(321, 16, 471, 159);
 			panel.add(panelEnfermedad);
 			panelEnfermedad.setLayout(new BorderLayout(0, 0));
-			
+
 			JScrollPane scrollPane_1 = new JScrollPane();
 			scrollPane_1.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 			panelEnfermedad.add(scrollPane_1, BorderLayout.CENTER);
-			
+
 			tableEnfermedades = new JTable();
 			enfermedadModel = new DefaultTableModel();
 			String[] headers = { "Código", "Nombre", "Sintomas", "Medicamentos", "Vacuna" };
 			enfermedadModel.setColumnIdentifiers(headers);
 			tableEnfermedades.setModel(enfermedadModel);
 			scrollPane_1.setViewportView(tableEnfermedades);
-			
+
 			JPanel panelCitas = new JPanel();
-			panelCitas.setBorder(new TitledBorder(UIManager.getBorder("TitledBorder.border"), "Citas", TitledBorder.LEADING, TitledBorder.TOP, null, new Color(0, 0, 0)));
+			panelCitas.setBorder(new TitledBorder(UIManager.getBorder("TitledBorder.border"), "Citas",
+					TitledBorder.LEADING, TitledBorder.TOP, null, new Color(0, 0, 0)));
 			panelCitas.setBounds(507, 247, 285, 159);
 			panel.add(panelCitas);
 			panelCitas.setLayout(new BorderLayout(0, 0));
-			
+
 			JScrollPane scrollPane_2 = new JScrollPane();
 			scrollPane_2.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 			panelCitas.add(scrollPane_2, BorderLayout.CENTER);
-			
+
 			tableCitas = new JTable();
 			citaModel = new DefaultTableModel();
-			String[] cabeza = { "Código", "Persona", "Fecha"};
+			String[] cabeza = { "Código", "Persona", "Fecha" };
 			citaModel.setColumnIdentifiers(cabeza);
 			tableCitas.setModel(citaModel);
 			scrollPane_2.setViewportView(tableCitas);
@@ -231,7 +212,8 @@ public class ListarMedicos extends JDialog {
 	}
 
 	public void loadMedico() {
-		if (Clinica.getInstance().getMisMedicos().size() > 0) {
+		int size = Clinica.getInstance().getMisMedicos().size();
+		if (size > 0 && index < size) {
 			miMedico = Clinica.getInstance().getMisMedicos().get(index);
 			txtCodigo.setText(miMedico.getCodigo());
 			txtNombre.setText(miMedico.getNombre());
@@ -239,18 +221,19 @@ public class ListarMedicos extends JDialog {
 			txtTelefono.setText(miMedico.getTelefono());
 			
 			tablesUpdate();
-			if (Clinica.getInstance().getMisMedicos().size() > 1) 
+			if (index < size-1)
 				btnSiguiente.setEnabled(true);
-			
-
+			else 
+				btnSiguiente.setEnabled(false);
 		}
+		
 	}
 
 	public void tablesUpdate() {
 		pacienteModel.setRowCount(0);
 		enfermedadModel.setRowCount(0);
 		citaModel.setRowCount(0);
-		
+
 		rowPaciente = new Object[tablePacientes.getColumnCount()];
 		rowEnfermedad = new Object[tableEnfermedades.getColumnCount()];
 		rowCita = new Object[tableCitas.getColumnCount()];
@@ -259,14 +242,14 @@ public class ListarMedicos extends JDialog {
 			rowPaciente[0] = paciente.getCodigo();
 			rowPaciente[1] = paciente.getNombre();
 			rowPaciente[2] = Integer.toString(paciente.getEdad());
-			if(paciente.isSeguroMedico())
+			if (paciente.isSeguroMedico())
 				rowPaciente[3] = "Si";
 			else
 				rowPaciente[3] = "No";
 			rowPaciente[4] = paciente.getGenero();
 			pacienteModel.addRow(rowPaciente);
 		}
-		
+
 		for (Enfermedad enfermedad : miMedico.getMisEnfermedades()) {
 			rowEnfermedad[0] = enfermedad.getCodigo();
 			rowEnfermedad[1] = enfermedad.getNombre();
@@ -276,19 +259,17 @@ public class ListarMedicos extends JDialog {
 			enfermedadModel.addRow(rowEnfermedad);
 		}
 		for (Cita cita : miMedico.getMisCitas()) {
-			
+
 			rowCita[0] = cita.getCodCita();
 			rowCita[1] = cita.getPersona().getCodigo();
 			SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm dd/MM/yyyy");
 			rowCita[2] = dateFormat.format(cita.getFecha());
 
-			
 			citaModel.addRow(rowCita);
 		}
 
-
 	}
-	
+
 	public static String dameMisVacunasEfectivas(ArrayList<Vacuna> vacunasEfectivas) {
 		StringBuilder aux = new StringBuilder();
 		for (Vacuna vacuna : vacunasEfectivas) {

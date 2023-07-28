@@ -129,7 +129,7 @@ public class ListSecretaria extends JDialog {
 	}
 
 	public void loadSecretaria() {
-		Secretaria secretaria = Clinica.getMiSecretaria();
+		Secretaria secretaria = Clinica.getInstance().getMiSecretaria();
 		if (secretaria != null) {
 			txtCodigo.setText(secretaria.getCodigo());
 			txtNombre.setText(secretaria.getNombre());

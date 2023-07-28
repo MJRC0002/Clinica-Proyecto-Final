@@ -4,7 +4,8 @@ import java.io.Serializable;
 import java.util.Date;
 
 public class Cita implements Serializable {
-	
+	private static final long serialVersionUID = 1L;
+
 	private String codCita;
 	private String idMedico;
 	private Persona persona;

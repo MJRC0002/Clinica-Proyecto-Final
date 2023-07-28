@@ -21,6 +21,7 @@ import logico.Cita;
 import logico.Clinica;
 import logico.Medico;
 import logico.Persona;
+import logico.Secretaria;
 import sun.misc.Cleaner;
 
 import javax.swing.JRadioButton;
@@ -91,7 +92,7 @@ public class RegCita extends JDialog {
 			panelCita.add(lblCodigoCita);
 
 			txtCodigoCita = new JTextField();
-			txtCodigoCita.setText("Cita - " + Clinica.getInstance().codigoCita);
+			txtCodigoCita.setText("Cita - " + Clinica.codigoCita);
 			txtCodigoCita.setBounds(73, 37, 146, 26);
 			panelCita.add(txtCodigoCita);
 			txtCodigoCita.setEditable(false);
@@ -126,11 +127,15 @@ public class RegCita extends JDialog {
 			JButton btnBuscar = new JButton("Buscar");
 			btnBuscar.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
-					Medico medico = Clinica.getInstance().buscarMedicoByCode(txtCodigoDoctor.getText());
+					Medico medico = Clinica.getInstance().buscarMedicoByCode("Médico - "+txtCodigoDoctor.getText());
 					if (medico != null) {
 						txtCodigoPersona.setEnabled(true);
 						txtEdad.setEnabled(true);
 						txtNombre.setEnabled(true);
+						rdbtnMasculino.setEnabled(true);
+						rdbtnFemenino.setEnabled(true);
+						rdbtnNoTieneSeguro.setEnabled(true);
+						rdbtnTieneSeguro.setEnabled(true);
 					}
 				}
 			});
@@ -149,6 +154,14 @@ public class RegCita extends JDialog {
 			panelPersona.add(lblCodigoPersona);
 
 			txtCodigoPersona = new JTextField();
+			txtCodigoPersona.addKeyListener(new KeyAdapter() {
+				@Override
+				public void keyTyped(KeyEvent e) {
+					char key = e.getKeyChar();
+					if (!Character.isDigit(key))
+						e.consume();
+				}
+			});
 			txtCodigoPersona.setEnabled(false);
 			txtCodigoPersona.setColumns(10);
 			txtCodigoPersona.setBounds(72, 33, 146, 26);
@@ -159,6 +172,14 @@ public class RegCita extends JDialog {
 			panelPersona.add(lblNombre);
 
 			txtNombre = new JTextField();
+			txtNombre.addKeyListener(new KeyAdapter() {
+				@Override
+				public void keyTyped(KeyEvent e) {
+					char key = e.getKeyChar();
+					if (!Character.isAlphabetic(key))
+						e.consume();
+				}
+			});
 			txtNombre.setEnabled(false);
 			txtNombre.setColumns(10);
 			txtNombre.setBounds(83, 72, 146, 26);
@@ -169,6 +190,14 @@ public class RegCita extends JDialog {
 			panelPersona.add(lblEdad);
 
 			txtEdad = new JTextField();
+			txtEdad.addKeyListener(new KeyAdapter() {
+				@Override
+				public void keyTyped(KeyEvent e) {
+					char key = e.getKeyChar();
+					if (!Character.isDigit(key))
+						e.consume();
+				}
+			});
 			txtEdad.setEnabled(false);
 			txtEdad.setColumns(10);
 			txtEdad.setBounds(304, 33, 146, 26);
@@ -179,11 +208,23 @@ public class RegCita extends JDialog {
 			panelPersona.add(lblSeguroMedico);
 
 			rdbtnTieneSeguro = new JRadioButton("si");
+			rdbtnTieneSeguro.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					rdbtnTieneSeguro.setSelected(true);
+					rdbtnNoTieneSeguro.setSelected(false);
+				}
+			});
 			rdbtnTieneSeguro.setEnabled(false);
 			rdbtnTieneSeguro.setBounds(365, 71, 57, 29);
 			panelPersona.add(rdbtnTieneSeguro);
 
 			rdbtnNoTieneSeguro = new JRadioButton("No");
+			rdbtnNoTieneSeguro.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					rdbtnTieneSeguro.setSelected(false);
+					rdbtnNoTieneSeguro.setSelected(true);
+				}
+			});
 			rdbtnNoTieneSeguro.setEnabled(false);
 			rdbtnNoTieneSeguro.setBounds(424, 71, 65, 29);
 			panelPersona.add(rdbtnNoTieneSeguro);
@@ -193,11 +234,25 @@ public class RegCita extends JDialog {
 			panelPersona.add(lblGenero);
 
 			rdbtnMasculino = new JRadioButton("M");
+			rdbtnMasculino.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					rdbtnFemenino.setSelected(false);
+					rdbtnMasculino.setSelected(true);
+					btnRegistrar.setEnabled(true);
+				}
+			});
 			rdbtnMasculino.setEnabled(false);
 			rdbtnMasculino.setBounds(94, 117, 57, 29);
 			panelPersona.add(rdbtnMasculino);
 
 			rdbtnFemenino = new JRadioButton("F");
+			rdbtnFemenino.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					rdbtnFemenino.setSelected(true);
+					rdbtnMasculino.setSelected(false);
+					btnRegistrar.setEnabled(true);
+				}
+			});
 			rdbtnFemenino.setEnabled(false);
 			rdbtnFemenino.setBounds(153, 117, 65, 29);
 			panelPersona.add(rdbtnFemenino);
@@ -211,7 +266,7 @@ public class RegCita extends JDialog {
 				btnRegistrar = new JButton("Registrar");
 				btnRegistrar.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent e) {
-						if (Clinica.getMiSecretaria() != null) {
+						if(Clinica.getInstance().getMiSecretaria() != null) {
 							boolean tieneSeguro;
 							if (rdbtnTieneSeguro.isSelected())
 								tieneSeguro = true;
@@ -221,13 +276,14 @@ public class RegCita extends JDialog {
 							char genero;
 							if (rdbtnMasculino.isSelected())
 								genero = 'm';
-							else {
+							else 
 								genero = 'f';
-							}
+							
 							Persona persona = new Persona(txtCodigoPersona.getText(), txtNombre.getText(),
 									Integer.parseInt(txtEdad.getText()), tieneSeguro, genero);
+							
 							Cita cita = new Cita(txtCodigoCita.getText(), txtCodigoDoctor.getText(), persona, (Date) spnFecha.getValue());
-							Clinica.getMiSecretaria().getMisCitas().add(cita);
+							Clinica.getInstance().getMiSecretaria().getMisCitas().add(cita);
 							Cleaner();
 						}
 					}
@@ -251,8 +307,9 @@ public class RegCita extends JDialog {
 	}
 
 	protected void Cleaner() {
-		Clinica.getInstance().codigoCita++;
+		Clinica.codigoCita++;
 		txtCodigoDoctor.setText("");
+		txtCodigoCita.setText("Cita - " + Clinica.codigoCita);
 		txtCodigoPersona.setText("");
 		txtNombre.setText("");
 		txtEdad.setText("");

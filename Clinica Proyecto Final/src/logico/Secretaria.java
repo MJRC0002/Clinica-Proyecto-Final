@@ -4,6 +4,8 @@ import java.io.Serializable;
 import java.util.ArrayList;
 
 public class Secretaria implements Serializable{
+	private static final long serialVersionUID = 1L;
+
 	private ArrayList<Cita> misCitas;
 	private String codigo;
 	private String nombre;
@@ -12,6 +14,7 @@ public class Secretaria implements Serializable{
 
 	public Secretaria(String codigo, String nombre, String user, String password) {
 		super();
+		misCitas = new ArrayList<Cita>();
 		this.codigo = codigo;
 		this.nombre = nombre;
 		this.user = user;

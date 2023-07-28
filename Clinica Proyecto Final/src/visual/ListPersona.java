@@ -97,8 +97,8 @@ public class ListPersona extends JDialog {
 	public static void loadPersonas() {
 		modelo.setRowCount(0);
 		row = new Object[tablePersonas.getColumnCount()];
-		if (Clinica.getMiSecretaria() != null) {
-			for (Cita cita : Clinica.getMiSecretaria().getMisCitas()) {
+		if (Clinica.getInstance().getMiSecretaria() != null) {
+			for (Cita cita : Clinica.getInstance().getMiSecretaria().getMisCitas()) {
 				Persona persona = cita.getPersona();
 				row[0] = persona.getCodigo();
 				row[1] = persona.getNombre();

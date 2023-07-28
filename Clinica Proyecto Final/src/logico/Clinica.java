@@ -8,14 +8,15 @@ import com.sun.org.apache.xml.internal.resolver.helpers.PublicId;
 import javafx.scene.control.IndexRange;
 
 public class Clinica implements Serializable {
+
 	private ArrayList<Medico> misMedicos;
 	private ArrayList<Paciente> misPacientes;
 	private ArrayList<Vacuna> misVacunas;
 	private ArrayList<Enfermedad> misEnfermedades;
 	private ArrayList<Consulta> misConsultas;
 	private static Clinica miClinica = null;
-	private static Secretaria miSecretaria = null;
-	private static Administrador miAdministrador = null;
+	private Secretaria miSecretaria = null;
+	private Administrador miAdministrador = null;
 	public static int codigoVacuna = 1, codigoPersonas = 1, codigoCita = 1, codigoMedico = 1, codigoConsulta = 1,
 			codigoHistorial = 1;
 
@@ -193,40 +194,42 @@ public class Clinica implements Serializable {
 			this.miSecretaria = secretaria;
 
 	}
-	
-	public void crearAdministrador(Administrador admin)
-	{
-		if(getMiAdministrador() == null)
+
+	public void crearAdministrador(Administrador admin) {
+		if (miAdministrador == null)
 			miAdministrador = admin;
 	}
 
-	public static Secretaria getMiSecretaria() {
-		return miSecretaria;
-	}
-	
 	public Object loginTipo(String usuario, String contrasenna) {
-		
+
 		Object aux = null;
 		for (Medico doc : misMedicos) {
-			if(doc.getUsuario().equalsIgnoreCase(usuario) && doc.getContrasenna().equalsIgnoreCase(contrasenna))
+			if (doc.getUsuario().equalsIgnoreCase(usuario) && doc.getContrasenna().equalsIgnoreCase(contrasenna))
 				return aux = doc;
 		}
-		
-		if(miSecretaria.getUser().equalsIgnoreCase(usuario) && miSecretaria.getPassword().equalsIgnoreCase(contrasenna))
-			aux = miSecretaria;
-		else if(getMiAdministrador().getUser().equalsIgnoreCase(usuario) && getMiAdministrador().getPassword().equalsIgnoreCase(contrasenna))
-			aux = getMiAdministrador();
-			
-			
+		if (miSecretaria != null)
+			if (miSecretaria.getUser().equalsIgnoreCase(usuario)
+					&& miSecretaria.getPassword().equalsIgnoreCase(contrasenna))
+				aux = miSecretaria;
+
+		if (miAdministrador != null)
+			if (getMiAdministrador().getUser().equalsIgnoreCase(usuario)
+					&& getMiAdministrador().getPassword().equalsIgnoreCase(contrasenna))
+				aux = getMiAdministrador();
+
 		return aux;
 	}
 
-	public static Administrador getMiAdministrador() {
+	public Administrador getMiAdministrador() {
 		return miAdministrador;
 	}
 
 	public static void setMiClinica(Clinica miClinica) {
 		Clinica.miClinica = miClinica;
 	}
-	
+
+	public Secretaria getMiSecretaria() {
+		return miSecretaria;
+	}
+
 }

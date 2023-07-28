@@ -2,55 +2,65 @@ package visual;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
-import java.awt.EventQueue;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 
 import logico.Clinica;
-import logico.Medico;
-import sun.security.jgss.LoginConfigImpl;
+import logico.Secretaria;
 
-import javax.swing.JMenuBar;
-import javax.swing.JMenu;
-import javax.swing.JMenuItem;
+import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectOutputStream;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
+
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
-import java.io.FileInputStream;
-import java.io.IOException;
 import java.net.Socket;
 import java.net.UnknownHostException;
-import java.awt.event.ActionEvent;
 
 public class Principal extends JFrame {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private JPanel contentPane;
 	private Dimension dim;
-
-	/**
-	 * Launch the application.
-	 */
-	public static void main(String[] args) {
-		EventQueue.invokeLater(new Runnable() {
-			public void run() {
-				try {
-					Principal frame = new Principal(null);
-					frame.setVisible(true);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		});
-	}
 
 	/**
 	 * Create the frame.
 	 */
 	public Principal(Object usuario) {
+		addWindowListener(new java.awt.event.WindowAdapter() {
+			@Override
+			public void windowClosing(java.awt.event.WindowEvent windowEvent) {
+				FileOutputStream clinica;
+				ObjectOutputStream clincaWrite;
+				try {
+					clinica = new FileOutputStream("clinica.dat");
+					clincaWrite = new ObjectOutputStream(clinica);
+					clincaWrite.writeObject(Clinica.getInstance());
+				} catch (FileNotFoundException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				} catch (IOException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+
+			}
+		});
 		setTitle("Clinica");
 		setResizable(false);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -115,9 +125,15 @@ public class Principal extends JFrame {
 		JMenuItem mntmRegistrarCita = new JMenuItem("Registrar cita");
 		mntmRegistrarCita.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				RegCita cita = new RegCita();
-				cita.setModal(true);
-				cita.setVisible(true);
+				if (Clinica.getInstance().getMiSecretaria() != null) {
+					RegCita cita = new RegCita();
+					cita.setModal(true);
+					cita.setVisible(true);
+				} else {
+					JOptionPane.showMessageDialog(null, "Agregrar una secretaria antes de registrar una cita",
+							"¡No hay secretaria!", JOptionPane.ERROR_MESSAGE);
+				}
+
 			}
 		});
 		mnCita.add(mntmRegistrarCita);
@@ -184,9 +200,15 @@ public class Principal extends JFrame {
 		JMenuItem mntmRegistrarSecretaria = new JMenuItem("Registrar secretaria");
 		mntmRegistrarSecretaria.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				RegSecretaria secretaria = new RegSecretaria();
-				secretaria.setModal(true);
-				secretaria.setVisible(true);
+				if (Clinica.getInstance().getMiSecretaria() == null) {
+					RegSecretaria secretaria = new RegSecretaria();
+					secretaria.setModal(true);
+					secretaria.setVisible(true);
+				} else {
+					JOptionPane.showMessageDialog(null,
+							"Puesto de secretaria ocupado, no es posible ingresar una nueva", "¡Puesto ocupado!",
+							JOptionPane.ERROR_MESSAGE);
+				}
 			}
 		});
 		mnSecretaria.add(mntmRegistrarSecretaria);
@@ -212,12 +234,12 @@ public class Principal extends JFrame {
 			public void actionPerformed(ActionEvent e) {
 				Socket sfd = null;
 				try {
-					sfd = new Socket("localhost", 7007);
+					sfd = new Socket("localhost", 8000);
 					DataInputStream EntradaSocket = new DataInputStream(new BufferedInputStream(sfd.getInputStream()));
 					DataOutputStream SalidaSocket = new DataOutputStream(
 							new BufferedOutputStream(sfd.getOutputStream()));
 
-					try (FileInputStream fis = new FileInputStream("laclinica10.dat")) {
+					try (FileInputStream fis = new FileInputStream("Clinica.dat")) {
 						byte[] buffer = new byte[4096];
 						int bytesRead;
 						while ((bytesRead = fis.read(buffer)) != -1) {

@@ -34,6 +34,10 @@ import javax.swing.border.LineBorder;
 
 public class RegMedico extends JDialog {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private final JPanel contentPanel = new JPanel();
 	private JButton btnRegistrar;
 	private JButton btnCancelar;
@@ -108,7 +112,7 @@ public class RegMedico extends JDialog {
 			panelDatosMedicos.add(lblCodigoCita);
 
 			txtCodigoMedico = new JTextField();
-			txtCodigoMedico.setText("Médico - " + Clinica.getInstance().codigoMedico);
+			txtCodigoMedico.setText("Médico - " + Clinica.codigoMedico);
 			txtCodigoMedico.setBounds(73, 37, 146, 26);
 			panelDatosMedicos.add(txtCodigoMedico);
 			txtCodigoMedico.setEditable(false);
@@ -123,7 +127,7 @@ public class RegMedico extends JDialog {
 				@Override
 				public void keyTyped(KeyEvent e) {
 					char key = e.getKeyChar();
-					if (Character.isDigit(key))
+					if (!Character.isAlphabetic(key))
 						e.consume();
 				}
 			});
@@ -189,63 +193,63 @@ public class RegMedico extends JDialog {
 			panelEnfermedades.setBounds(15, 269, 592, 196);
 			panel.add(panelEnfermedades);
 			panelEnfermedades.setLayout(null);
-			
-						btnIzq = new JButton("<");
-						btnIzq.setBounds(252, 61, 81, 25);
-						panelEnfermedades.add(btnIzq);
-						btnIzq.addActionListener(new ActionListener() {
-							public void actionPerformed(ActionEvent e) {
-								Enfermedad enfermedad = Clinica.getInstance()
-										.buscarEnfermedadByCode((String) tableRegistradas.getValueAt(indexRegistrada, 0));
-								if (!isEnfermedadCustodiada(enfermedad)) {
-									enfermedaCustodiadas.add(enfermedad);
-									LoadEnfermedades();
-									btnIzq.setEnabled(false);
-								}
-							}
-						});
+
+			btnIzq = new JButton("<");
+			btnIzq.setBounds(252, 61, 81, 25);
+			panelEnfermedades.add(btnIzq);
+			btnIzq.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					Enfermedad enfermedad = Clinica.getInstance()
+							.buscarEnfermedadByCode((String) tableRegistradas.getValueAt(indexRegistrada, 0));
+					if (!isEnfermedadCustodiada(enfermedad)) {
+						enfermedaCustodiadas.add(enfermedad);
+						LoadEnfermedades();
 						btnIzq.setEnabled(false);
-						
-									btnDer = new JButton(">");
-									btnDer.setBounds(252, 120, 81, 25);
-									panelEnfermedades.add(btnDer);
-									btnDer.addActionListener(new ActionListener() {
-										public void actionPerformed(ActionEvent e) {
-											enfermedaRegistradas.add(Clinica.getInstance()
-													.buscarEnfermedadByCode((String) tableEnfCust.getValueAt(indexCustodiada, 0)));
-											enfermedaCustodiadas.remove(indexCustodiada);
-											LoadEnfermedades();
-											btnDer.setEnabled(false);
-										}
-									});
-									btnDer.setEnabled(false);
-									
-												panelPersona = new JPanel();
-												panelPersona.setBounds(12, 25, 231, 158);
-												panelEnfermedades.add(panelPersona);
-												panelPersona.setBorder(new TitledBorder(UIManager.getBorder("TitledBorder.border"),
-														"Enfermedades a custodiar", TitledBorder.LEADING, TitledBorder.TOP, null, new Color(0, 0, 0)));
-												panelPersona.setLayout(null);
-												
-															JScrollPane scrollPane = new JScrollPane();
-															scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
-															scrollPane.setBounds(15, 28, 201, 114);
-															panelPersona.add(scrollPane);
-															
-																		tableEnfCust = new JTable();
-																		tableEnfCust.addMouseListener(new MouseAdapter() {
-																			@Override
-																			public void mouseClicked(MouseEvent e) {
-																				indexCustodiada = tableEnfCust.getSelectedRow();
-																				if (indexCustodiada >= 0)
-																					btnDer.setEnabled(true);
-																				else {
-																					btnDer.setEnabled(false);
-																				}
-																			}
-																		});
-																		tableEnfCust.setModel(enfermedadesCustodiadasModel);
-																		scrollPane.setViewportView(tableEnfCust);
+					}
+				}
+			});
+			btnIzq.setEnabled(false);
+
+			btnDer = new JButton(">");
+			btnDer.setBounds(252, 120, 81, 25);
+			panelEnfermedades.add(btnDer);
+			btnDer.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					enfermedaRegistradas.add(Clinica.getInstance()
+							.buscarEnfermedadByCode((String) tableEnfCust.getValueAt(indexCustodiada, 0)));
+					enfermedaCustodiadas.remove(indexCustodiada);
+					LoadEnfermedades();
+					btnDer.setEnabled(false);
+				}
+			});
+			btnDer.setEnabled(false);
+
+			panelPersona = new JPanel();
+			panelPersona.setBounds(12, 25, 231, 158);
+			panelEnfermedades.add(panelPersona);
+			panelPersona.setBorder(new TitledBorder(UIManager.getBorder("TitledBorder.border"),
+					"Enfermedades a custodiar", TitledBorder.LEADING, TitledBorder.TOP, null, new Color(0, 0, 0)));
+			panelPersona.setLayout(null);
+
+			JScrollPane scrollPane = new JScrollPane();
+			scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+			scrollPane.setBounds(15, 28, 201, 114);
+			panelPersona.add(scrollPane);
+
+			tableEnfCust = new JTable();
+			tableEnfCust.addMouseListener(new MouseAdapter() {
+				@Override
+				public void mouseClicked(MouseEvent e) {
+					indexCustodiada = tableEnfCust.getSelectedRow();
+					if (indexCustodiada >= 0)
+						btnDer.setEnabled(true);
+					else {
+						btnDer.setEnabled(false);
+					}
+				}
+			});
+			tableEnfCust.setModel(enfermedadesCustodiadasModel);
+			scrollPane.setViewportView(tableEnfCust);
 
 			panelUsuario = new JPanel();
 			panelUsuario.setLayout(null);
@@ -255,7 +259,6 @@ public class RegMedico extends JDialog {
 			panel.add(panelUsuario);
 
 			txtUser = new JTextField();
-			txtUser.setText("Admin");
 			txtUser.setColumns(10);
 			txtUser.setBounds(81, 42, 190, 26);
 			panelUsuario.add(txtUser);
@@ -269,7 +272,6 @@ public class RegMedico extends JDialog {
 			panelUsuario.add(lblContrasenna);
 
 			txtContrasenna = new JTextField();
-			txtContrasenna.setText("Admin");
 			txtContrasenna.setColumns(10);
 			txtContrasenna.setBounds(354, 42, 211, 26);
 			panelUsuario.add(txtContrasenna);
@@ -283,11 +285,12 @@ public class RegMedico extends JDialog {
 				btnRegistrar = new JButton("Registrar");
 				btnRegistrar.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent e) {
-						//validar campos!
+						Object aux = Clinica.getInstance().loginTipo(txtUser.getText(), txtContrasenna.getText());
+						// validar campos!
 						if (!(txtCodigoMedico.getText().isEmpty() || txtContrasenna.getText().isEmpty()
 								|| txtEspecializacion.getText().isEmpty() || txtNombre.getText().isEmpty()
-								|| txtTelefono.getText().isEmpty() || txtUser.getText().isEmpty())) {
-							//Hacer el registro
+								|| txtTelefono.getText().isEmpty() || txtUser.getText().isEmpty()) && aux == null) {
+							// Hacer el registro
 							Medico medico = new Medico(txtCodigoMedico.getText(), txtNombre.getText(),
 									txtTelefono.getText(), txtEspecializacion.getText(), txtUser.getText(),
 									txtContrasenna.getText());
@@ -296,7 +299,13 @@ public class RegMedico extends JDialog {
 								medico.getMisEnfermedades().add(enfermedad);
 
 							Clinica.getInstance().getMisMedicos().add(medico);
-						}else {
+							Cleaner();
+						} else if (aux != null) {
+							JOptionPane.showMessageDialog(null,
+									"Usuario registrado, favor de ingresar uno nuevo!",
+									"Usuario registrado", JOptionPane.ERROR_MESSAGE);
+						}
+						else {
 							JOptionPane.showMessageDialog(null,
 									"Por favor, complete todos los campos antes de registrar el Medico!",
 									"Campos incompletos", JOptionPane.ERROR_MESSAGE);
@@ -356,7 +365,10 @@ public class RegMedico extends JDialog {
 	}
 
 	protected void Cleaner() {
-		Clinica.getInstance().codigoMedico++;
+		Clinica.codigoMedico++;
+		txtCodigoMedico.setText("Médico - " + Clinica.codigoMedico);
+		txtContrasenna.setText("");
+		txtUser.setText("");
 		txtNombre.setText("");
 		txtEspecializacion.setText("");
 		txtNombre.setText("");

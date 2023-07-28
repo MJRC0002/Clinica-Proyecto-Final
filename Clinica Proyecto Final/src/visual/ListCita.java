@@ -22,8 +22,6 @@ import javax.swing.border.TitledBorder;
 
 import logico.Cita;
 import logico.Clinica;
-import logico.Medico;
-import logico.Persona;
 
 public class ListCita extends JDialog {
 
@@ -46,7 +44,7 @@ public class ListCita extends JDialog {
 	private JRadioButton rdbtnFemenino;
 	private JButton btnAnterior;
 	private JButton btnSiguiente;
-	private int index = 0;
+	private int index = 0, sizeCitas = Clinica.getInstance().getMiSecretaria().getMisCitas().size();
 	private Cita miCita = null;
 
 	/**
@@ -92,7 +90,6 @@ public class ListCita extends JDialog {
 			panelCita.add(lblCodigoCita);
 
 			txtCodigoCita = new JTextField();
-			txtCodigoCita.setText("Cita - " + Clinica.getInstance().codigoCita);
 			txtCodigoCita.setBounds(73, 37, 146, 26);
 			panelCita.add(txtCodigoCita);
 			txtCodigoCita.setEditable(false);
@@ -246,39 +243,32 @@ public class ListCita extends JDialog {
 	}
 
 	public void loadCita() {
-		if (Clinica.getInstance().getMisMedicos().size() > 0) {
-			if (Clinica.getMiSecretaria() != null) {
-				miCita = Clinica.getMiSecretaria().getMisCitas().get(index);
-				txtCodigoCita.setText(miCita.getCodCita());
-				txtCodigoDoctor.setText(miCita.getIdMedico());
-				txtCodigoPersona.setText(miCita.getPersona().getCodigo());
-				txtEdad.setText(Integer.toString(miCita.getPersona().getEdad()));
-				txtNombre.setText(miCita.getPersona().getNombre());
-				spnFecha.setToolTipText(miCita.getFecha().toString());
-				if (miCita.getPersona().getGenero() == 'm') {
-					rdbtnMasculino.setEnabled(true);
-				} else {
-					rdbtnFemenino.setEnabled(true);
-				}
-				if (miCita.getPersona().isSeguroMedico()) {
-					rdbtnTieneSeguro.setEnabled(true);
-				} else {
-					rdbtnNoTieneSeguro.setEnabled(true);
-				}
-			}
+
+		if (sizeCitas > 0 && index < sizeCitas) {
+			miCita = Clinica.getInstance().getMiSecretaria().getMisCitas().get(index);
+			txtCodigoCita.setText(miCita.getCodCita());
+			txtCodigoDoctor.setText(miCita.getIdMedico());
+			txtCodigoPersona.setText(miCita.getPersona().getCodigo());
+			txtEdad.setText(Integer.toString(miCita.getPersona().getEdad()));
+			txtNombre.setText(miCita.getPersona().getNombre());
+			spnFecha.setToolTipText(miCita.getFecha().toString());
+			
+			if (miCita.getPersona().getGenero() == 'm') 
+				rdbtnMasculino.setEnabled(true);
+			else 
+				rdbtnFemenino.setEnabled(true);
+			
+			if (miCita.getPersona().isSeguroMedico()) 
+				rdbtnTieneSeguro.setEnabled(true);
+			else 
+				rdbtnNoTieneSeguro.setEnabled(true);
+			
+			if (index < sizeCitas-1)
+				btnSiguiente.setEnabled(true);
+			else 
+				btnSiguiente.setEnabled(false);
+			
 		}
 	}
 
-	protected void Cleaner() {
-		Clinica.getInstance().codigoCita++;
-		txtCodigoDoctor.setText("");
-		txtCodigoPersona.setText("");
-		txtNombre.setText("");
-		txtEdad.setText("");
-		spnFecha.setModel(new SpinnerDateModel(new Date(), null, null, Calendar.DAY_OF_YEAR));
-		rdbtnNoTieneSeguro.setSelected(false);
-		rdbtnTieneSeguro.setSelected(false);
-		rdbtnFemenino.setSelected(false);
-		rdbtnMasculino.setSelected(false);
-	}
 }
