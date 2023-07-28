@@ -1,14 +1,26 @@
 package visual;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Dimension;
 
+import javax.swing.BoxLayout;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.border.EmptyBorder;
 
+import org.jfree.chart.ChartFactory;
+import org.jfree.chart.ChartPanel;
+import org.jfree.chart.JFreeChart;
+import org.jfree.chart.plot.CategoryPlot;
+import org.jfree.chart.plot.PlotOrientation;
+import org.jfree.data.category.DefaultCategoryDataset;
+import org.jfree.data.general.DefaultPieDataset;
+
 import logico.Clinica;
-import logico.Secretaria;
+import logico.Enfermedad;
+import logico.Vacuna;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -22,21 +34,80 @@ import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 
-import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
-import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.net.Socket;
 import java.net.UnknownHostException;
 
 public class Principal extends JFrame {
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 1L;
 	private JPanel contentPane;
 	private Dimension dim;
+	private JPanel panel;
+	private JScrollPane scrollPane;
+
+	private class ActualizarGraficosWorker extends Thread {
+		@Override
+		public void run() {
+			DefaultPieDataset data = new DefaultPieDataset();
+			for (Enfermedad enfermedad : Clinica.getInstance().getMisEnfermedades()) {
+				data.setValue(enfermedad.getNombre(),
+						Clinica.getInstance().porcentajeEnfermedad(enfermedad.getCodigo()));
+			}
+			JFreeChart chart = ChartFactory.createPieChart("Porcentaje de enfermedades en la Clinica", data, true, true,
+					false);
+			ChartPanel chartPanel = new ChartPanel(chart);
+			chartPanel.setPreferredSize(new Dimension(panel.getWidth(), 500));
+
+			DefaultCategoryDataset dataset = new DefaultCategoryDataset();
+			dataset.setValue(8, "Mujeres", "Lunes");
+			dataset.setValue(6, "Hombres", "Lunes");
+			dataset.setValue(8, "Mujeres", "Martes");
+			dataset.setValue(6, "Hombres", "Martes");
+			dataset.setValue(8, "Mujeres", "Miercoles");
+			dataset.setValue(6, "Hombres", "Miercoles");
+			dataset.setValue(8, "Mujeres", "Jueves");
+			dataset.setValue(6, "Hombres", "Jueves");
+			dataset.setValue(8, "Mujeres", "Viernes");
+			dataset.setValue(6, "Hombres", "Viernes");
+			dataset.setValue(8, "Mujeres", "Sabado");
+			dataset.setValue(6, "Hombres", "Sabado");
+			dataset.setValue(8, "Mujeres", "Domingo");
+			dataset.setValue(6, "Hombres", "Domingo");
+
+			JFreeChart chart2 = ChartFactory.createBarChart3D("Cantidad de pacientes por Género Atendidos hoy", "Días",
+					"Cantidad", dataset, PlotOrientation.VERTICAL, true, true, false);
+			chart2.setBackgroundPaint(Color.cyan);
+			chart2.getTitle().setPaint(Color.black);
+			CategoryPlot p = chart2.getCategoryPlot();
+			p.setRangeGridlinePaint(Color.red);
+
+			DefaultCategoryDataset line_chart_dataset = new DefaultCategoryDataset();
+			for (Vacuna vacuna : Clinica.getInstance().getMisVacunas()) {
+				data.setValue(vacuna.getNombre(), Clinica.getInstance().porcentajeVacunado(vacuna.getCodigo()));
+			}
+			JFreeChart vacunadoChart = ChartFactory.createLineChart("Porcentaje Vacunado", "Mes", "Porciento",
+					line_chart_dataset, PlotOrientation.VERTICAL, true, true, false);
+
+			JPanel chartPanel2 = new JPanel();
+			chartPanel2.setPreferredSize(new Dimension(panel.getWidth(), 500));
+			chartPanel2.setLayout(new BorderLayout());
+			chartPanel2.add(new ChartPanel(chart2), BorderLayout.CENTER);
+
+			JPanel vacunChartPanel = new JPanel();
+			vacunChartPanel.setLayout(new BorderLayout());
+			vacunChartPanel.add(new ChartPanel(vacunadoChart), BorderLayout.CENTER);
+
+			panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+			panel.add(chartPanel);
+			panel.add(chartPanel2);
+			panel.add(vacunChartPanel);
+
+			panel.revalidate();
+			panel.repaint();
+		}
+	}
 
 	/**
 	 * Create the frame.
@@ -52,10 +123,8 @@ public class Principal extends JFrame {
 					clincaWrite = new ObjectOutputStream(clinica);
 					clincaWrite.writeObject(Clinica.getInstance());
 				} catch (FileNotFoundException e1) {
-					// TODO Auto-generated catch block
 					e1.printStackTrace();
 				} catch (IOException e1) {
-					// TODO Auto-generated catch block
 					e1.printStackTrace();
 				}
 
@@ -102,9 +171,9 @@ public class Principal extends JFrame {
 		JMenuItem mntmRegistrarConsulta = new JMenuItem("Registrar consulta");
 		mntmRegistrarConsulta.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				RegConsulta consulta = new RegConsulta(null);
-				consulta.setModal(true);
-				consulta.setVisible(true);
+				ListCita cita = new ListCita(true);
+				cita.setModal(true);
+				cita.setVisible(true);
 			}
 		});
 		mnConsulta.add(mntmRegistrarConsulta);
@@ -141,7 +210,7 @@ public class Principal extends JFrame {
 		JMenuItem mntmListarCita = new JMenuItem("Listar cita");
 		mntmListarCita.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				ListCita cita = new ListCita();
+				ListCita cita = new ListCita(false);
 				cita.setModal(true);
 				cita.setVisible(true);
 			}
@@ -235,7 +304,6 @@ public class Principal extends JFrame {
 				Socket sfd = null;
 				try {
 					sfd = new Socket("localhost", 8000);
-					DataInputStream EntradaSocket = new DataInputStream(new BufferedInputStream(sfd.getInputStream()));
 					DataOutputStream SalidaSocket = new DataOutputStream(
 							new BufferedOutputStream(sfd.getOutputStream()));
 
@@ -269,6 +337,16 @@ public class Principal extends JFrame {
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		contentPane.setLayout(new BorderLayout(0, 0));
 		setContentPane(contentPane);
+
+		panel = new JPanel();
+		contentPane.add(panel, BorderLayout.CENTER);
+
+		JScrollPane scrollPane = new JScrollPane(panel);
+		scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+		contentPane.add(scrollPane, BorderLayout.CENTER);
+
+		ActualizarGraficosWorker worker = new ActualizarGraficosWorker();
+		worker.start();
 	}
 
 }

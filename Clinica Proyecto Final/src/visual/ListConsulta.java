@@ -63,9 +63,11 @@ public class ListConsulta extends JDialog {
 	private JTextField txtSintomas;
 	private JRadioButton rdbtnSiBajoVigilancia;
 	private JRadioButton rdbtnNoBajoVigilancia;
-	private JCheckBox chckbxHistorialMedico;
 	private static Object[] row;
-	private Cita cita = null;
+	private Consulta miConsulta = null;
+	private int index = 0;
+	private JButton btnAnterior;
+	private JButton btnSiguiente;
 
 	/**
 	 * Launch the application.
@@ -159,10 +161,12 @@ public class ListConsulta extends JDialog {
 			panelConsulta.add(lblBajoVigilancia);
 
 			rdbtnSiBajoVigilancia = new JRadioButton("Si");
+			rdbtnSiBajoVigilancia.setEnabled(false);
 			rdbtnSiBajoVigilancia.setBounds(24, 282, 45, 25);
 			panelConsulta.add(rdbtnSiBajoVigilancia);
 
 			rdbtnNoBajoVigilancia = new JRadioButton("No");
+			rdbtnNoBajoVigilancia.setEnabled(false);
 			rdbtnNoBajoVigilancia.setBounds(89, 282, 45, 25);
 			panelConsulta.add(rdbtnNoBajoVigilancia);
 
@@ -170,6 +174,7 @@ public class ListConsulta extends JDialog {
 			lblDiagnostico.setBounds(244, 73, 83, 20);
 			panelConsulta.add(lblDiagnostico);
 			txtDiagnostico = new JTextField();
+			txtDiagnostico.setEnabled(false);
 			txtDiagnostico.setBounds(244, 103, 233, 76);
 			panelConsulta.add(txtDiagnostico);
 			txtDiagnostico.setColumns(10);
@@ -179,6 +184,7 @@ public class ListConsulta extends JDialog {
 			panelConsulta.add(lblSintomas);
 
 			txtSintomas = new JTextField();
+			txtSintomas.setEnabled(false);
 			txtSintomas.setColumns(10);
 			txtSintomas.setBounds(244, 225, 233, 76);
 			panelConsulta.add(txtSintomas);
@@ -186,7 +192,7 @@ public class ListConsulta extends JDialog {
 			panelPersona = new JPanel();
 			panelPersona.setBorder(new TitledBorder(UIManager.getBorder("TitledBorder.border"),
 					"Informaci\u00F3n de Paciente", TitledBorder.LEADING, TitledBorder.TOP, null, new Color(0, 0, 0)));
-			panelPersona.setBounds(15, 342, 489, 210);
+			panelPersona.setBounds(15, 342, 489, 160);
 			panel.add(panelPersona);
 			panelPersona.setLayout(null);
 
@@ -249,37 +255,18 @@ public class ListConsulta extends JDialog {
 			panelPersona.add(rdbtnFemenino);
 
 			JLabel lblEnfermo = new JLabel("Enfermo:");
-			lblEnfermo.setBounds(15, 160, 86, 20);
+			lblEnfermo.setBounds(255, 121, 86, 20);
 			panelPersona.add(lblEnfermo);
 
 			rdbtnEstaEnfermo = new JRadioButton("Si");
 			rdbtnEstaEnfermo.setEnabled(false);
-			rdbtnEstaEnfermo.setBounds(94, 158, 57, 29);
+			rdbtnEstaEnfermo.setBounds(315, 117, 57, 29);
 			panelPersona.add(rdbtnEstaEnfermo);
 
 			rdbtnNoEstarEnfermo = new JRadioButton("No");
 			rdbtnNoEstarEnfermo.setEnabled(false);
-			rdbtnNoEstarEnfermo.setBounds(153, 158, 65, 29);
+			rdbtnNoEstarEnfermo.setBounds(376, 117, 65, 29);
 			panelPersona.add(rdbtnNoEstarEnfermo);
-
-			chckbxHistorialMedico = new JCheckBox("Agregar Historial Medico.");
-			chckbxHistorialMedico.setBounds(255, 112, 195, 38);
-			panelPersona.add(chckbxHistorialMedico);
-
-			// Cargar persona para crear el paciente.
-			if (cita != null)
-				loadPaciente(cita);
-			else {
-				txtCodigoPaciente.setEnabled(true);
-				txtNombre.setEnabled(true);
-				txtEdad.setEnabled(true);
-				rdbtnTieneSeguro.setEnabled(true);
-				rdbtnNoTieneSeguro.setEnabled(true);
-				rdbtnMasculino.setEnabled(true);
-				rdbtnFemenino.setEnabled(true);
-				rdbtnEstaEnfermo.setEnabled(true);
-				rdbtnNoEstarEnfermo.setEnabled(true);
-			}
 
 			// Agregar listener para la selección de enfermedad en la tabla
 			table.getSelectionModel().addListSelectionListener(e -> {
@@ -291,7 +278,40 @@ public class ListConsulta extends JDialog {
 					}
 				}
 			});
+			btnAnterior = new JButton("Anterior");
+			btnAnterior.setEnabled(false);
+			btnSiguiente = new JButton("Siguiente");
+			btnSiguiente.setEnabled(false);
+
+			btnAnterior.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					if (index > 0) {
+						index--;
+						loadConsulta();
+						if (index == 0)
+							btnAnterior.setEnabled(false);
+						btnSiguiente.setEnabled(true);
+
+					}
+				}
+			});
+			btnAnterior.setBounds(106, 530, 115, 29);
+			panel.add(btnAnterior);
+			btnSiguiente.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					if (index < Clinica.getInstance().getMisMedicos().size()) {
+						index++;
+						btnAnterior.setEnabled(true);
+						if (index >= Clinica.getInstance().getMisMedicos().size())
+							btnSiguiente.setEnabled(false);
+						loadConsulta();
+					}
+				}
+			});
+			btnSiguiente.setBounds(306, 530, 115, 29);
+			panel.add(btnSiguiente);
 		}
+
 		{
 			JPanel buttonPane = new JPanel();
 			buttonPane.setBorder(new TitledBorder(null, "", TitledBorder.LEADING, TitledBorder.TOP, null, null));
@@ -311,20 +331,43 @@ public class ListConsulta extends JDialog {
 		loadEnfermedades();
 	}
 
-	private void loadPaciente(Cita cita) {
-		Persona persona = cita.getPersona();
-		txtCodigoPaciente.setText(persona.getCodigo());
-		txtNombre.setText(persona.getNombre());
-		txtEdad.setText(Integer.toString(persona.getEdad()));
-		if (persona.getGenero() == 'm')
-			rdbtnMasculino.setSelected(true);
-		else
-			rdbtnFemenino.setSelected(true);
+	public void loadConsulta() {
+		if (Clinica.getInstance().getMisConsultas().size() > 0) {
+			miConsulta = Clinica.getInstance().getMisConsultas().get(index);
+			txtCodigoConsulta.setText(miConsulta.getCodConsulta());
+			txtCodigoPaciente.setText(miConsulta.getPaciente().getCodigo());
+			txtDiagnostico.setText(miConsulta.getDiagnostico());
+			txtEdad.setText(Integer.toString(miConsulta.getPaciente().getEdad()));
+			txtNombre.setText(miConsulta.getPaciente().getNombre());
+			spnFecha.setToolTipText(new Date().toString());
+			txtDiagnostico.setText(miConsulta.getDiagnostico());
+			txtSintomas.setText(miConsulta.getSintomas());
+			txtEnfermedad.setText(miConsulta.getEnfermedad().getNombre());
 
-		if (persona.isSeguroMedico())
-			rdbtnTieneSeguro.setSelected(true);
-		else
-			rdbtnNoTieneSeguro.setSelected(false);
+			if (miConsulta.isBajoVig()) {
+				rdbtnSiBajoVigilancia.setEnabled(true);
+			} else {
+				rdbtnNoBajoVigilancia.setEnabled(true);
+			}
+
+			if (miConsulta.getPaciente().getGenero() == 'm') {
+				rdbtnMasculino.setEnabled(true);
+			} else {
+				rdbtnFemenino.setEnabled(true);
+			}
+
+			if (miConsulta.getPaciente().isSeguroMedico()) {
+				rdbtnTieneSeguro.setEnabled(true);
+			} else {
+				rdbtnNoTieneSeguro.setEnabled(true);
+			}
+
+			if (miConsulta.getPaciente().isEnfermo()) {
+				rdbtnEstaEnfermo.setEnabled(true);
+			} else {
+				rdbtnNoEstarEnfermo.setEnabled(true);
+			}
+		}
 
 	}
 

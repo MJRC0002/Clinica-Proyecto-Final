@@ -47,23 +47,8 @@ public class ListCita extends JDialog {
 	private int index = 0, sizeCitas = Clinica.getInstance().getMiSecretaria().getMisCitas().size();
 	private Cita miCita = null;
 
-	/**
-	 * Launch the application.
-	 */
-	public static void main(String[] args) {
-		try {
-			ListCita dialog = new ListCita();
-			dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
-			dialog.setVisible(true);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
-
-	/**
-	 * Create the dialog.
-	 */
-	public ListCita() {
+	
+	public ListCita(boolean hacerConsulta) {
 		setResizable(false);
 		setTitle("Listar Cita");
 		setBounds(100, 100, 535, 515);

@@ -146,7 +146,7 @@ public class RegConsulta extends JDialog {
 
 			table = new JTable();
 			enfermedadesRegistradasModel = new DefaultTableModel();
-			String[] columnNames = { "Código", "Nombre", "Sintomas" };
+			String[] columnNames = { "Código", "Nombre" };
 			enfermedadesRegistradasModel.setColumnIdentifiers(columnNames);
 			table.setModel(enfermedadesRegistradasModel);
 			scrollPane.setViewportView(table);
@@ -177,7 +177,7 @@ public class RegConsulta extends JDialog {
 			lblDiagnostico = new JLabel("Diagnostico:");
 			lblDiagnostico.setBounds(244, 73, 83, 20);
 			panelConsulta.add(lblDiagnostico);
-//Esto es un cambio
+
 			txtDiagnostico = new JTextField();
 			txtDiagnostico.setBounds(244, 103, 233, 76);
 			panelConsulta.add(txtDiagnostico);
@@ -271,7 +271,7 @@ public class RegConsulta extends JDialog {
 			rdbtnNoEstarEnfermo.setBounds(153, 158, 65, 29);
 			panelPersona.add(rdbtnNoEstarEnfermo);
 
-			chckbxHistorialMedico = new JCheckBox("Agregar Historial Medico.");
+			chckbxHistorialMedico = new JCheckBox("Agregar a historial m\u00E9dico.");
 			chckbxHistorialMedico.setBounds(255, 112, 195, 38);
 			panelPersona.add(chckbxHistorialMedico);
 
@@ -295,8 +295,8 @@ public class RegConsulta extends JDialog {
 				if (!e.getValueIsAdjusting()) {
 					int selectedRow = table.getSelectedRow();
 					if (selectedRow >= 0) {
-						String codigoEnfermedad = (String) table.getValueAt(selectedRow, 0);
-						txtEnfermedad.setText(codigoEnfermedad);
+						String nombreEnfermedad = (String) table.getValueAt(selectedRow, 1);
+						txtEnfermedad.setText(nombreEnfermedad);
 					}
 				}
 			});
@@ -310,7 +310,7 @@ public class RegConsulta extends JDialog {
 				btnRegistrar = new JButton("Registrar");
 				btnRegistrar.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent e) {
-						if (Clinica.getMiSecretaria() != null) {
+						if (Clinica.getInstance().getMiSecretaria() != null) {
 							boolean tieneSeguro;
 							if (rdbtnTieneSeguro.isSelected())
 								tieneSeguro = true;
@@ -390,10 +390,9 @@ public class RegConsulta extends JDialog {
 		enfermedadesRegistradasModel.setRowCount(0);
 		row = new Object[table.getColumnCount()];
 
-		for (Vacuna v : Clinica.getInstance().getMisVacunas()) {
-			row[0] = v.getCodigo();
-			row[1] = v.getNombre();
-			row[2] = v.getDescripcion();
+		for (Enfermedad enfermedad : Clinica.getInstance().getMisEnfermedades()) {
+			row[0] = enfermedad.getCodigo();
+			row[1] = enfermedad.getNombre();
 			enfermedadesRegistradasModel.addRow(row);
 		}
 	}
