@@ -18,6 +18,7 @@ import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.data.category.DefaultCategoryDataset;
 import org.jfree.data.general.DefaultPieDataset;
 
+import logico.Administrador;
 import logico.Clinica;
 import logico.Enfermedad;
 import logico.Vacuna;
@@ -38,6 +39,7 @@ import java.io.BufferedOutputStream;
 import java.io.DataOutputStream;
 import java.net.Socket;
 import java.net.UnknownHostException;
+import java.util.PrimitiveIterator.OfDouble;
 
 public class Principal extends JFrame {
 
@@ -45,7 +47,6 @@ public class Principal extends JFrame {
 	private JPanel contentPane;
 	private Dimension dim;
 	private JPanel panel;
-	private JScrollPane scrollPane;
 
 	private class ActualizarGraficosWorker extends Thread {
 		@Override
@@ -85,7 +86,7 @@ public class Principal extends JFrame {
 
 			DefaultCategoryDataset line_chart_dataset = new DefaultCategoryDataset();
 			for (Vacuna vacuna : Clinica.getInstance().getMisVacunas()) {
-				data.setValue(vacuna.getNombre(), Clinica.getInstance().porcentajeVacunado(vacuna.getCodigo()));
+				line_chart_dataset.addValue(Clinica.getInstance().porcentajeVacunado(vacuna.getCodigo()), "Vacunados", vacuna.getNombre());
 			}
 			JFreeChart vacunadoChart = ChartFactory.createLineChart("Porcentaje Vacunado", "Mes", "Porciento",
 					line_chart_dataset, PlotOrientation.VERTICAL, true, true, false);
@@ -292,31 +293,41 @@ public class Principal extends JFrame {
 		});
 		mnSecretaria.add(mntmListarSecretaria);
 
-		JMenu mnAdministrador = new JMenu("Administrador");
-		menuBar.add(mnAdministrador);
-
 		JMenu mnRespaldo = new JMenu("Respaldo");
 		menuBar.add(mnRespaldo);
 
 		JMenuItem mntmNewMenuItem_2 = new JMenuItem("Respaldar");
 		mntmNewMenuItem_2.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				 try (Socket sfd = new Socket("localhost", 8016);
-			             FileInputStream fis = new FileInputStream("Clinica.dat");
-			             BufferedOutputStream bos = new BufferedOutputStream(sfd.getOutputStream())) {
+				Socket sfd = null;
+				try {
+					sfd = new Socket("localhost", 8000);
+					DataOutputStream SalidaSocket = new DataOutputStream(
+							new BufferedOutputStream(sfd.getOutputStream()));
 
-			            byte[] buffer = new byte[4096];
-			            int bytesRead;
-			            while ((bytesRead = fis.read(buffer)) != -1) {
-			                bos.write(buffer, 0, bytesRead);
-			            }
-			            bos.flush();
-			            System.out.println("Respaldo enviado correctamente.");
-			        } catch (UnknownHostException uhe) {
-			            System.out.println("No se puede acceder al servidor.");
-			        } catch (IOException ioe) {
-			            System.out.println("Comunicación rechazada.");
-			        }
+					try (FileInputStream fis = new FileInputStream("Clinica.dat")) {
+						byte[] buffer = new byte[4096];
+						int bytesRead;
+						while ((bytesRead = fis.read(buffer)) != -1) {
+							SalidaSocket.write(buffer, 0, bytesRead);
+						}
+						SalidaSocket.flush();
+						System.out.println("Respaldo enviado correctamente.");
+					} catch (IOException eo) {
+						System.out.println("Error al enviar el respaldo: " + eo.getMessage());
+					}
+				} catch (UnknownHostException uhe) {
+					System.out.println("No se puede acceder al servidor.");
+				} catch (IOException ioe) {
+					System.out.println("Comunicación rechazada.");
+				} finally {
+					try {
+						if (sfd != null)
+							sfd.close();
+					} catch (IOException eo) {
+						eo.printStackTrace();
+					}
+				}
 			}
 		});
 		mnRespaldo.add(mntmNewMenuItem_2);
@@ -331,6 +342,12 @@ public class Principal extends JFrame {
 		JScrollPane scrollPane = new JScrollPane(panel);
 		scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 		contentPane.add(scrollPane, BorderLayout.CENTER);
+
+		// usuario instance
+		if (usuario instanceof Administrador) {
+			mnConsulta.setEnabled(false);
+			mnCita.setEnabled(false);
+		}
 
 		ActualizarGraficosWorker worker = new ActualizarGraficosWorker();
 		worker.start();

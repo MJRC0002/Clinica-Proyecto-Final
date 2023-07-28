@@ -74,6 +74,7 @@ public class RegConsulta extends JDialog {
 	private JRadioButton rdbtnNoBajoVigilancia;
 	private JCheckBox chckbxHistorialMedico;
 	private static Object[] row;
+	private String codigoEnfermedad = null;
 
 	/**
 	 * Launch the application.
@@ -293,6 +294,7 @@ public class RegConsulta extends JDialog {
 					int selectedRow = table.getSelectedRow();
 					if (selectedRow >= 0) {
 						String nombreEnfermedad = (String) table.getValueAt(selectedRow, 1);
+						codigoEnfermedad = (String) table.getValueAt(selectedRow, 0);
 						txtEnfermedad.setText(nombreEnfermedad);
 					}
 				}
@@ -333,9 +335,9 @@ public class RegConsulta extends JDialog {
 
 							HistorialMedico historial = null;
 							Paciente paciente = new Paciente(txtCodigoPaciente.getText(), txtNombre.getText(),
-									Integer.parseInt(txtEdad.getText()), tieneSeguro, genero, enfermo, historial);
+									Integer.parseInt(txtEdad.getText()), tieneSeguro, genero, enfermo, historial, false);
 							Enfermedad enfermedad = Clinica.getInstance()
-									.buscarEnfermedadByCode(txtEnfermedad.getText());
+									.buscarEnfermedadByCode(codigoEnfermedad);
 							Consulta consulta = new Consulta(txtCodigoConsulta.getText(), paciente, enfermedad,
 									txtDiagnostico.getText(), txtSintomas.getText(), bv);
 							if (chckbxHistorialMedico.isSelected()) {

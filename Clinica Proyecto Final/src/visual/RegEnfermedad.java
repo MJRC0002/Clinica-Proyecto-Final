@@ -185,6 +185,11 @@ public class RegEnfermedad extends JDialog {
 			}
 			{
 				btnDer = new JButton(">");
+				btnDer.addActionListener(new ActionListener() {
+					public void actionPerformed(ActionEvent e) {
+						
+					}
+				});
 				btnDer.setEnabled(false);
 				btnDer.setBounds(243, 262, 70, 25);
 				panel.add(btnDer);

@@ -70,7 +70,7 @@ public class login extends JFrame implements KeyListener {
 					if (Clinica.getInstance().getMiAdministrador() == null) {
 						Administrador aux = new Administrador("Admin", "Admin");
 						Clinica.getInstance().crearAdministrador(aux);
-						Principal frame = new Principal(null);
+						Principal frame = new Principal(aux);
 						frame.setVisible(true);
 					} else {
 						login frame = new login();

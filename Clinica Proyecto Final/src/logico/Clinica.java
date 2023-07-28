@@ -160,20 +160,34 @@ public class Clinica implements Serializable {
 	}
 
 	// Porcentaje de las enfermedades.
-	public int porcentajeEnfermedad(String idEnfermedad) {
+	public int porcentajeEnfermedad(String codigo) {
 		int count = 0;
-		for (Consulta consulta : misConsultas) {
-			if (consulta.getEnfermedad().getCodigo().equalsIgnoreCase(idEnfermedad)) {
+		for (Consulta consulta : misConsultas)
+			if (consulta.getEnfermedad().getCodigo().equalsIgnoreCase(codigo) && consulta.getPaciente().isEnfermo())
 				count++;
-			}
 
+		if (count == 0)
+			return count;
+		else if(pacientesEnfermos() != 0)
+			return (count / pacientesEnfermos()) * 100;
+		else {
+			return 0;
 		}
-		return count;
 
 	}
 
-	// Porcentaje de las enfermedades.
-	public float porcentajeVacunado(String idVacuna) {
+	private int pacientesEnfermos() {
+		int aux = 0;
+
+		for (Paciente paciente : misPacientes)
+			if (paciente.isEnfermo())
+				aux++;
+
+		return aux;
+	}
+
+	// Porcentaje de las vacunas.
+	public int porcentajeVacunado(String idVacuna) {
 		int count = 0;
 		for (Paciente paciente : misPacientes) {
 			for (Vacuna vacuna : paciente.getMisVacunas()) {
@@ -183,9 +197,21 @@ public class Clinica implements Serializable {
 		}
 		if (count == 0)
 			return count;
+		else if(pacientesVacunados() != 0)
+			return (count / pacientesVacunados()) * 100;
 		else {
-			return misPacientes.size() / (count * misPacientes.size());
+			return 0;
 		}
+	}
+
+	private int pacientesVacunados() {
+		int aux = 0;
+
+		for (Paciente paciente : misPacientes)
+			if (paciente.isVacunado())
+				aux++;
+
+		return aux;
 	}
 
 	// Crear secretaria
@@ -204,17 +230,16 @@ public class Clinica implements Serializable {
 
 		Object aux = null;
 		for (Medico doc : misMedicos) {
-			if (doc.getUsuario().equalsIgnoreCase(usuario) && doc.getContrasenna().equalsIgnoreCase(contrasenna))
+			if (doc.getUsuario().equalsIgnoreCase(usuario) && doc.getContrasenna().equals(contrasenna))
 				return aux = doc;
 		}
 		if (miSecretaria != null)
-			if (miSecretaria.getUser().equalsIgnoreCase(usuario)
-					&& miSecretaria.getPassword().equalsIgnoreCase(contrasenna))
+			if (miSecretaria.getUser().equalsIgnoreCase(usuario) && miSecretaria.getPassword().equals(contrasenna))
 				aux = miSecretaria;
 
 		if (miAdministrador != null)
 			if (getMiAdministrador().getUser().equalsIgnoreCase(usuario)
-					&& getMiAdministrador().getPassword().equalsIgnoreCase(contrasenna))
+					&& getMiAdministrador().getPassword().equals(contrasenna))
 				aux = getMiAdministrador();
 
 		return aux;

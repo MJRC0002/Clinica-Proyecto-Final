@@ -10,7 +10,7 @@ public class Enfermedad implements Serializable {
 	private String nombre;
 	private String sintomas;
 	private String medicamentos;
-	private ArrayList<Vacuna> VacunasEfectivas;
+	private ArrayList<Vacuna> vacunasEfectivas;
 
 	public Enfermedad(String codigo, String nombre, String sintomas, String medicamentos) {
 		super();
@@ -18,7 +18,7 @@ public class Enfermedad implements Serializable {
 		this.nombre = nombre;
 		this.sintomas = sintomas;
 		this.medicamentos = medicamentos;
-		this.VacunasEfectivas = new ArrayList<>();
+		this.vacunasEfectivas = new ArrayList<>();
 	}
 
 	public String getCodigo() {
@@ -38,7 +38,7 @@ public class Enfermedad implements Serializable {
 	}
 
 	public ArrayList<Vacuna> getVacunasEfectivas() {
-		return VacunasEfectivas;
+		return vacunasEfectivas;
 	}
 
 }

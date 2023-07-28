@@ -9,12 +9,14 @@ public class Paciente extends Persona {
 	private ArrayList<Vacuna> misVacunas;
 	private HistorialMedico miHistorial;
 	private boolean enfermo;
+	private boolean vacunado;
 
 	public Paciente(String codigo, String nombre, int edad, boolean seguroMedico, char genero, boolean enfermo,
-			HistorialMedico miHistorial) {
+			HistorialMedico miHistorial, boolean vacunado) {
 		super(codigo, nombre, edad, seguroMedico, genero);
 
 		this.enfermo = enfermo;
+		this.vacunado = vacunado;
 		misConsultas = new ArrayList<Consulta>();
 		misVacunas = new ArrayList<Vacuna>();
 		this.miHistorial = miHistorial;
@@ -38,6 +40,10 @@ public class Paciente extends Persona {
 
 	public HistorialMedico getMiHIstorial() {
 		return miHistorial;
+	}
+
+	public boolean isVacunado() {
+		return vacunado;
 	}
 
 }

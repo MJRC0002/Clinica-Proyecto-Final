@@ -174,7 +174,7 @@ public class RegVacuna extends JDialog {
 								Enfermedad enfermedad = Clinica.getInstance()
 										.buscarEnfermedadByCode((String) enferSeleccionadasModel.getValueAt(i, 0));
 								vacuna.getLasEnfermedades().add(enfermedad);
-								enfermedad.getVacunasEfectivas().add(vacuna);
+								//enfermedad.getVacunasEfectivas().add(vacuna);
 							}
 							Clinica.getInstance().getMisVacunas().add(vacuna);
 							clean();
@@ -248,7 +248,7 @@ public class RegVacuna extends JDialog {
 
 	private void agregarEnfermedadSeleccionada() {
 		int filaSeleccionada = tableRegistradas.getSelectedRow();
-		if (filaSeleccionada != -1) {
+		if (filaSeleccionada >= 0) {
 			Object[] filaDatos = new Object[3];
 			filaDatos[0] = enferRegistradasModel.getValueAt(filaSeleccionada, 0);
 			filaDatos[1] = enferRegistradasModel.getValueAt(filaSeleccionada, 1);
@@ -260,7 +260,7 @@ public class RegVacuna extends JDialog {
 
 	private void quitarEnfermedadSeleccionada() {
 		int filaSeleccionada = tableSelecionadas.getSelectedRow();
-		if (filaSeleccionada != -1) {
+		if (filaSeleccionada >= 0) {
 			Object[] filaDatos = new Object[3];
 			filaDatos[0] = enferSeleccionadasModel.getValueAt(filaSeleccionada, 0);
 			filaDatos[1] = enferSeleccionadasModel.getValueAt(filaSeleccionada, 1);
