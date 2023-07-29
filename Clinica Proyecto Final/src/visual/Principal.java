@@ -13,10 +13,9 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
+import java.net.ConnectException;
 import java.net.Socket;
 import java.net.UnknownHostException;
-import java.util.Calendar;
-import java.util.PrimitiveIterator.OfDouble;
 
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
@@ -39,10 +38,16 @@ import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.data.category.DefaultCategoryDataset;
 import org.jfree.data.general.DefaultPieDataset;
 
+import com.sun.org.apache.xml.internal.serializer.ElemDesc;
+
+import java.util.Calendar;
+import java.util.Date;
 import logico.Administrador;
 import logico.Clinica;
+import logico.Consulta;
 import logico.Enfermedad;
 import logico.Medico;
+import logico.Paciente;
 import logico.Secretaria;
 import logico.Vacuna;
 
@@ -82,13 +87,28 @@ public class Principal extends JFrame {
 			// Segunda grafica.
 			DefaultCategoryDataset dataset = new DefaultCategoryDataset();
 
-			String[] diasSemana = { "Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado", "Domingo" };
+			dataset.setValue(0, "Mujeres", "Lunes");
+			dataset.setValue(0, "Hombres", "Lunes");
+			dataset.setValue(0, "Mujeres", "Martes");
+			dataset.setValue(0, "Hombres", "Martes");
+			dataset.setValue(0, "Mujeres", "Miércoles");
+			dataset.setValue(0, "Hombres", "Miércoles");
+			dataset.setValue(0, "Mujeres", "Jueves");
+			dataset.setValue(0, "Hombres", "Jueves");
+			dataset.setValue(0, "Mujeres", "Viernes");
+			dataset.setValue(0, "Hombres", "Viernes");
+			dataset.setValue(0, "Mujeres", "Sábado");
+			dataset.setValue(0, "Hombres", "Sábado");
+			dataset.setValue(0, "Mujeres", "Domingo");
+			dataset.setValue(0, "Hombres", "Domingo");
+			Calendar calendar = Calendar.getInstance();
+			for (Consulta consulta : Clinica.getInstance().ConsultasDeLaSemana()) {
+				calendar.setTime(consulta.getFecha());
+				if (consulta.getPaciente().getGenero() == 'm')
+					dataset.incrementValue(1, "Hombres", obtenerNombreDia(calendar.get(Calendar.DAY_OF_WEEK)));
+				else
+					dataset.incrementValue(1, "Mujeres", obtenerNombreDia(calendar.get(Calendar.DAY_OF_WEEK)));
 
-			for (int i = 0; i < diasSemana.length; i++) {
-				int cantMujeres = Clinica.getInstance().cantMujeresPacientes();
-				int cantHombres = Clinica.getInstance().cantHombresPacientes();
-				dataset.setValue(cantMujeres, "Mujeres", diasSemana[i]);
-				dataset.setValue(cantHombres, "Hombres", diasSemana[i]);
 			}
 
 			JFreeChart chart2 = ChartFactory.createBarChart3D("Cantidad de pacientes por Género Atendidos por Día",
@@ -402,6 +422,11 @@ public class Principal extends JFrame {
 			buttonPane.add(btnMes);
 		}
 
+	}
+
+	private static String obtenerNombreDia(int diaDeLaSemana) {
+		String[] nombresDias = { "Domingo", "Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado" };
+		return nombresDias[diaDeLaSemana - 1];
 	}
 
 }

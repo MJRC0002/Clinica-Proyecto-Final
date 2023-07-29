@@ -412,16 +412,15 @@ public class RegConsulta extends JDialog {
 						} else {
 							Paciente paciente = new Paciente(txtCodigoPaciente.getText(), txtNombre.getText(),
 									Integer.parseInt(txtEdad.getText()), tieneSeguro, genero, enfermo, vacunado);
+							Enfermedad enfermedad = Clinica.getInstance().buscarEnfermedadByCode(codigoEnfermedad);
+							Consulta consulta = new Consulta(txtCodigoConsulta.getText(), paciente, enfermedad,
+									txtDiagnostico.getText(), txtSintomas.getText(), bv, (Date) spnFecha.getValue());
+							if (chckbxHistorialMedico.isSelected())
+								paciente.getMiHIstorial().getMisConsultasRelevantes().add(consulta);
 
 							if (vacunado == true)
 								for (Vacuna vacuna : lasVacunas)
 									paciente.getMisVacunas().add(vacuna);
-
-							Enfermedad enfermedad = Clinica.getInstance().buscarEnfermedadByCode(codigoEnfermedad);
-							Consulta consulta = new Consulta(txtCodigoConsulta.getText(), paciente, enfermedad,
-									txtDiagnostico.getText(), txtSintomas.getText(), bv);
-							if (chckbxHistorialMedico.isSelected())
-								paciente.getMiHIstorial().getMisConsultasRelevantes().add(consulta);
 
 							Clinica.getInstance().getMisConsultas().add(consulta);
 							Clinica.getInstance().getMisPacientes().add(paciente);

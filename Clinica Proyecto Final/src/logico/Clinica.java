@@ -3,7 +3,9 @@ package logico;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 public class Clinica implements Serializable {
 
@@ -177,7 +179,7 @@ public class Clinica implements Serializable {
 		}
 	}
 
-	private int pacientesEnfermos() {
+	public int pacientesEnfermos() {
 		int aux = 0;
 
 		for (Paciente paciente : misPacientes)
@@ -207,7 +209,7 @@ public class Clinica implements Serializable {
 		}
 	}
 
-	private int pacientesVacunados() {
+	public int pacientesVacunados() {
 		int aux = 0;
 
 		for (Paciente paciente : misPacientes)
@@ -259,4 +261,18 @@ public class Clinica implements Serializable {
 	public Secretaria getMiSecretaria() {
 		return miSecretaria;
 	}
+	
+	public ArrayList<Consulta> ConsultasDeLaSemana(){
+		ArrayList<Consulta>consultaSemana = new ArrayList<Consulta>();
+		for (Consulta consulta : misConsultas) {
+			if(calcularDiferenciaDias(consulta.getFecha()) <= 7)
+				consultaSemana.add(consulta);
+		}
+	
+		return consultaSemana;
+	}
+	public long calcularDiferenciaDias(Date fechaObjeto) {
+        long diffInMillis = new Date().getTime() - fechaObjeto.getTime();
+        return TimeUnit.DAYS.convert(diffInMillis, TimeUnit.MILLISECONDS);
+    }
 }
