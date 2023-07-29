@@ -14,6 +14,8 @@ import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.net.UnknownHostException;
+import java.util.Calendar;
+import java.util.PrimitiveIterator.OfDouble;
 
 import javax.swing.BoxLayout;
 import javax.swing.JFrame;
@@ -23,6 +25,7 @@ import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.SwingUtilities;
 import javax.swing.border.EmptyBorder;
 
 import org.jfree.chart.ChartFactory;
@@ -36,6 +39,8 @@ import org.jfree.data.general.DefaultPieDataset;
 import logico.Administrador;
 import logico.Clinica;
 import logico.Enfermedad;
+import logico.Medico;
+import logico.Secretaria;
 import logico.Vacuna;
 
 public class Principal extends JFrame {
@@ -48,6 +53,19 @@ public class Principal extends JFrame {
 	private class ActualizarGraficosWorker extends Thread {
 		@Override
 		public void run() {
+
+			while (true) {
+				SwingUtilities.invokeLater(() -> actualizarGraficos());
+				try {
+					Thread.sleep(5000); // Pausa de 5 segundos antes de actualizar nuevamente
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+
+		private void actualizarGraficos() {
+			// Primera GRafica.
 			DefaultPieDataset data = new DefaultPieDataset();
 			for (Enfermedad enfermedad : Clinica.getInstance().getMisEnfermedades()) {
 				data.setValue(enfermedad.getNombre(),
@@ -58,32 +76,30 @@ public class Principal extends JFrame {
 			ChartPanel chartPanel = new ChartPanel(chart);
 			chartPanel.setPreferredSize(new Dimension(panel.getWidth(), 500));
 
+			// Segunda grafica.
 			DefaultCategoryDataset dataset = new DefaultCategoryDataset();
-			dataset.setValue(8, "Mujeres", "Lunes");
-			dataset.setValue(6, "Hombres", "Lunes");
-			dataset.setValue(8, "Mujeres", "Martes");
-			dataset.setValue(6, "Hombres", "Martes");
-			dataset.setValue(8, "Mujeres", "Miercoles");
-			dataset.setValue(6, "Hombres", "Miercoles");
-			dataset.setValue(8, "Mujeres", "Jueves");
-			dataset.setValue(6, "Hombres", "Jueves");
-			dataset.setValue(8, "Mujeres", "Viernes");
-			dataset.setValue(6, "Hombres", "Viernes");
-			dataset.setValue(8, "Mujeres", "Sabado");
-			dataset.setValue(6, "Hombres", "Sabado");
-			dataset.setValue(8, "Mujeres", "Domingo");
-			dataset.setValue(6, "Hombres", "Domingo");
 
-			JFreeChart chart2 = ChartFactory.createBarChart3D("Cantidad de pacientes por Género Atendidos hoy", "Días",
-					"Cantidad", dataset, PlotOrientation.VERTICAL, true, true, false);
+			String[] diasSemana = { "Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado", "Domingo" };
+
+			for (int i = 0; i < diasSemana.length; i++) {
+				int cantMujeres = Clinica.getInstance().cantMujeresPacientes();
+				int cantHombres = Clinica.getInstance().cantHombresPacientes();
+				dataset.setValue(cantMujeres, "Mujeres", diasSemana[i]);
+				dataset.setValue(cantHombres, "Hombres", diasSemana[i]);
+			}
+
+			JFreeChart chart2 = ChartFactory.createBarChart3D("Cantidad de pacientes por Género Atendidos por Día",
+					"Días", "Cantidad", dataset, PlotOrientation.VERTICAL, true, true, false);
 			chart2.setBackgroundPaint(Color.cyan);
 			chart2.getTitle().setPaint(Color.black);
 			CategoryPlot p = chart2.getCategoryPlot();
 			p.setRangeGridlinePaint(Color.red);
 
+			// tercera grafica
 			DefaultCategoryDataset line_chart_dataset = new DefaultCategoryDataset();
 			for (Vacuna vacuna : Clinica.getInstance().getMisVacunas()) {
-				line_chart_dataset.addValue(Clinica.getInstance().porcentajeVacunado(vacuna.getCodigo()), "Vacunados", vacuna.getNombre());
+				line_chart_dataset.addValue(Clinica.getInstance().porcentajeVacunado(vacuna.getCodigo()), "Vacunados",
+						vacuna.getNombre());
 			}
 			JFreeChart vacunadoChart = ChartFactory.createLineChart("Porcentaje Vacunado", "Mes", "Porciento",
 					line_chart_dataset, PlotOrientation.VERTICAL, true, true, false);
@@ -101,9 +117,16 @@ public class Principal extends JFrame {
 			panel.add(chartPanel);
 			panel.add(chartPanel2);
 			panel.add(vacunChartPanel);
-
-			panel.revalidate();
-			panel.repaint();
+			// Asegúrate de que las actualizaciones se realicen en el hilo de despacho de
+			// eventos (Event Dispatch Thread)
+			SwingUtilities.invokeLater(() -> {
+				panel.removeAll(); // Limpia el panel antes de añadir los nuevos gráficos
+				panel.add(chartPanel);
+				panel.add(chartPanel2);
+				panel.add(vacunChartPanel);
+				panel.revalidate();
+				panel.repaint();
+			});
 		}
 	}
 
@@ -172,6 +195,10 @@ public class Principal extends JFrame {
 				ListCita cita = new ListCita(true, usuario);
 				cita.setModal(true);
 				cita.setVisible(true);
+				if (usuario instanceof Medico && ((Medico) usuario).getMisCitas().size() == 0)
+					JOptionPane.showMessageDialog(null,
+							"Usted no puede registrar una consulta porque no tiene citas disponibles.",
+							"No tiene citas", JOptionPane.ERROR_MESSAGE);
 			}
 		});
 		mnConsulta.add(mntmRegistrarConsulta);
@@ -340,14 +367,29 @@ public class Principal extends JFrame {
 		scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 		contentPane.add(scrollPane, BorderLayout.CENTER);
 
-		// usuario instance
+		// usuario instanceof
 		if (usuario instanceof Administrador) {
 			mnConsulta.setEnabled(false);
 			mnCita.setEnabled(false);
+			// Inicia el hilo solo para el usuario Administrador
+			ActualizarGraficosWorker worker = new ActualizarGraficosWorker();
+			worker.start();
+		} else if (usuario instanceof Medico) {
+			mnCita.setEnabled(false);
+			mnMedico.setEnabled(false);
+			mnSecretaria.setEnabled(false);
+			mnRespaldo.setEnabled(false);
+			mntmRegistrarEnfermedad.setEnabled(false);
+			mntmRegistrarVacuna.setEnabled(false);
+		} else if (usuario instanceof Secretaria) {
+			mnConsulta.setEnabled(false);
+			mnRespaldo.setEnabled(false);
+			mnMedico.setEnabled(false);
+			mnSecretaria.setEnabled(false);
+			mnEnfermedad.setEnabled(false);
+			mnVacuna.setEnabled(false);
 		}
 
-		ActualizarGraficosWorker worker = new ActualizarGraficosWorker();
-		worker.start();
 	}
 
 }

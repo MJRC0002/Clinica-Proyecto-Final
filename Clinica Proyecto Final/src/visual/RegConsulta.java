@@ -29,6 +29,7 @@ import logico.Clinica;
 import logico.Consulta;
 import logico.Enfermedad;
 import logico.HistorialMedico;
+import logico.Medico;
 import logico.Paciente;
 import logico.Persona;
 import java.awt.event.KeyAdapter;
@@ -112,7 +113,7 @@ public class RegConsulta extends JDialog {
 			panelConsulta.add(lblCodigoConsulta);
 
 			txtCodigoConsulta = new JTextField();
-			txtCodigoConsulta.setText("Consulta - " + (Clinica.getInstance().getMisConsultas().size()+1));
+			txtCodigoConsulta.setText("Consulta - " + (Clinica.getInstance().getMisConsultas().size() + 1));
 			txtCodigoConsulta.setBounds(73, 37, 146, 26);
 			panelConsulta.add(txtCodigoConsulta);
 			txtCodigoConsulta.setEditable(false);
@@ -347,14 +348,16 @@ public class RegConsulta extends JDialog {
 						Enfermedad enfermedad = Clinica.getInstance().buscarEnfermedadByCode(codigoEnfermedad);
 						Consulta consulta = new Consulta(txtCodigoConsulta.getText(), paciente, enfermedad,
 								txtDiagnostico.getText(), txtSintomas.getText(), bv);
-						if (chckbxHistorialMedico.isSelected()) 
+						if (chckbxHistorialMedico.isSelected())
 							paciente.getMiHIstorial().getMisConsultasRelevantes().add(consulta);
 
-						
 						Clinica.getInstance().getMisConsultas().add(consulta);
 						Clinica.getInstance().getMisPacientes().add(paciente);
+						// borrar cita para medico y secretaria.
+						Medico medico = Clinica.getInstance().buscarMedicoByCode("Médico - " + cita.getIdMedico());
+						medico.getMisCitas().remove(cita);
+						Clinica.getInstance().getMiSecretaria().getMisCitas().remove(cita);
 						dispose();
-
 					}
 				});
 				btnRegistrar.setActionCommand("OK");

@@ -2,7 +2,8 @@ package logico;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-
+import java.util.Arrays;
+import java.util.List;
 
 public class Clinica implements Serializable {
 
@@ -18,7 +19,6 @@ public class Clinica implements Serializable {
 	private static Clinica miClinica = null;
 	private Secretaria miSecretaria = null;
 	private Administrador miAdministrador = null;
-	
 
 	public Clinica() {
 		super();
@@ -160,20 +160,21 @@ public class Clinica implements Serializable {
 	}
 
 	// Porcentaje de las enfermedades.
-	public int porcentajeEnfermedad(String codigo) {
+	public double porcentajeEnfermedad(String codigo) {
 		int count = 0;
-		for (Consulta consulta : misConsultas)
-			if (consulta.getEnfermedad().getCodigo().equalsIgnoreCase(codigo) && consulta.getPaciente().isEnfermo())
+		for (Consulta consulta : misConsultas) {
+			if (consulta.getEnfermedad().getCodigo().equalsIgnoreCase(codigo) && consulta.getPaciente().isEnfermo()) {
 				count++;
-
-		if (count == 0)
-			return count;
-		else if(pacientesEnfermos() != 0)
-			return (count / pacientesEnfermos()) * 100;
-		else {
-			return 0;
+			}
 		}
 
+		if (count == 0) {
+			return 0.0;
+		} else if (pacientesEnfermos() != 0) {
+			return ((double) count / pacientesEnfermos()) * 100.0;
+		} else {
+			return 0.0;
+		}
 	}
 
 	private int pacientesEnfermos() {
@@ -187,20 +188,22 @@ public class Clinica implements Serializable {
 	}
 
 	// Porcentaje de las vacunas.
-	public int porcentajeVacunado(String idVacuna) {
+	public double porcentajeVacunado(String idVacuna) {
 		int count = 0;
 		for (Paciente paciente : misPacientes) {
 			for (Vacuna vacuna : paciente.getMisVacunas()) {
-				if (vacuna.getCodigo().equalsIgnoreCase(idVacuna))
+				if (vacuna.getCodigo().equalsIgnoreCase(idVacuna)) {
 					count++;
+				}
 			}
 		}
-		if (count == 0)
-			return count;
-		else if(pacientesVacunados() != 0)
-			return (count / pacientesVacunados()) * 100;
-		else {
-			return 0;
+
+		if (count == 0) {
+			return 0.0;
+		} else if (pacientesVacunados() != 0) {
+			return ((double) count / pacientesVacunados()) * 100.0;
+		} else {
+			return 0.0;
 		}
 	}
 
@@ -256,5 +259,4 @@ public class Clinica implements Serializable {
 	public Secretaria getMiSecretaria() {
 		return miSecretaria;
 	}
-
 }

@@ -220,17 +220,22 @@ public class RegEnfermedad extends JDialog {
 				btnDer = new JButton(">");
 				btnDer.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent e) {
-						
+						agregarVacunaSeleccionada();
 					}
 				});
 				btnDer.setEnabled(false);
-				btnDer.setBounds(243, 262, 70, 25);
+				btnDer.setBounds(243, 269, 70, 25);
 				panel.add(btnDer);
 			}
 			{
 				btnIzq = new JButton("<");
+				btnIzq.addActionListener(new ActionListener() {
+					public void actionPerformed(ActionEvent e) {
+						quitarVacunaSeleccionada();
+					}
+				});
 				btnIzq.setEnabled(false);
-				btnIzq.setBounds(243, 316, 70, 25);
+				btnIzq.setBounds(243, 337, 70, 25);
 				panel.add(btnIzq);
 			}
 		}
@@ -354,6 +359,30 @@ public class RegEnfermedad extends JDialog {
 		vacunasEfecModel.setRowCount(0);
 		btnIzq.setEnabled(false);
 		btnDer.setEnabled(false);
+	}
+
+	private void agregarVacunaSeleccionada() {
+		int filaSeleccionada = tableVacunasDisp.getSelectedRow();
+		if (filaSeleccionada >= 0) {
+			Object[] filaDatos = new Object[3];
+			filaDatos[0] = vacunasDispModel.getValueAt(filaSeleccionada, 0);
+			filaDatos[1] = vacunasDispModel.getValueAt(filaSeleccionada, 1);
+			filaDatos[2] = vacunasDispModel.getValueAt(filaSeleccionada, 2);
+			vacunasEfecModel.addRow(filaDatos);
+			vacunasDispModel.removeRow(filaSeleccionada);
+		}
+	}
+
+	private void quitarVacunaSeleccionada() {
+		int filaSeleccionada = tableVacunasEfec.getSelectedRow();
+		if (filaSeleccionada >= 0) {
+			Object[] filaDatos = new Object[3];
+			filaDatos[0] = vacunasEfecModel.getValueAt(filaSeleccionada, 0);
+			filaDatos[1] = vacunasEfecModel.getValueAt(filaSeleccionada, 1);
+			filaDatos[2] = vacunasEfecModel.getValueAt(filaSeleccionada, 2);
+			vacunasDispModel.addRow(filaDatos);
+			vacunasEfecModel.removeRow(filaSeleccionada);
+		}
 	}
 
 }
