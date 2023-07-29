@@ -3,9 +3,24 @@ package visual;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.io.BufferedOutputStream;
+import java.io.DataOutputStream;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectOutputStream;
+import java.net.Socket;
+import java.net.UnknownHostException;
 
 import javax.swing.BoxLayout;
 import javax.swing.JFrame;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.border.EmptyBorder;
@@ -22,24 +37,6 @@ import logico.Administrador;
 import logico.Clinica;
 import logico.Enfermedad;
 import logico.Vacuna;
-
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.ObjectOutputStream;
-import javax.swing.JMenu;
-import javax.swing.JMenuBar;
-import javax.swing.JMenuItem;
-import javax.swing.JOptionPane;
-
-import java.io.BufferedOutputStream;
-import java.io.DataOutputStream;
-import java.net.Socket;
-import java.net.UnknownHostException;
-import java.util.PrimitiveIterator.OfDouble;
 
 public class Principal extends JFrame {
 
@@ -172,7 +169,7 @@ public class Principal extends JFrame {
 		JMenuItem mntmRegistrarConsulta = new JMenuItem("Registrar consulta");
 		mntmRegistrarConsulta.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				ListCita cita = new ListCita(true);
+				ListCita cita = new ListCita(true, usuario);
 				cita.setModal(true);
 				cita.setVisible(true);
 			}
@@ -211,7 +208,7 @@ public class Principal extends JFrame {
 		JMenuItem mntmListarCita = new JMenuItem("Listar cita");
 		mntmListarCita.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				ListCita cita = new ListCita(false);
+				ListCita cita = new ListCita(false, usuario);
 				cita.setModal(true);
 				cita.setVisible(true);
 			}

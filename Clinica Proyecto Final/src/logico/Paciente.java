@@ -11,15 +11,14 @@ public class Paciente extends Persona {
 	private boolean enfermo;
 	private boolean vacunado;
 
-	public Paciente(String codigo, String nombre, int edad, boolean seguroMedico, char genero, boolean enfermo,
-			HistorialMedico miHistorial, boolean vacunado) {
+	public Paciente(String codigo, String nombre, int edad, boolean seguroMedico, char genero, boolean enfermo, boolean vacunado) {
 		super(codigo, nombre, edad, seguroMedico, genero);
 
 		this.enfermo = enfermo;
 		this.vacunado = vacunado;
 		misConsultas = new ArrayList<Consulta>();
 		misVacunas = new ArrayList<Vacuna>();
-		this.miHistorial = miHistorial;
+		miHistorial = new HistorialMedico();
 	}
 
 	public boolean isEnfermo() {

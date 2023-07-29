@@ -2,21 +2,22 @@ package visual;
 
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 import javax.swing.JButton;
 import javax.swing.JDialog;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JTextField;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.TitledBorder;
 
 import logico.Clinica;
 import logico.Secretaria;
-
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.JTextField;
-import java.awt.event.ActionListener;
-import java.awt.event.ActionEvent;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 
 public class RegSecretaria extends JDialog {
 
@@ -79,6 +80,14 @@ public class RegSecretaria extends JDialog {
 			panelSecretaria.add(lblNombre);
 
 			txtNombre = new JTextField();
+			txtNombre.addKeyListener(new KeyAdapter() {
+				@Override
+				public void keyTyped(KeyEvent e) {
+					char key = e.getKeyChar();
+					if (!Character.isWhitespace(key) && !Character.isAlphabetic(key))
+						e.consume();
+				}
+			});
 			txtNombre.setBounds(264, 30, 116, 22);
 			panelSecretaria.add(txtNombre);
 			txtNombre.setColumns(10);

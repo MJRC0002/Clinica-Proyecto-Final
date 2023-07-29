@@ -2,31 +2,28 @@ package visual;
 
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+import java.util.Calendar;
+import java.util.Date;
 
 import javax.swing.JButton;
 import javax.swing.JDialog;
-import javax.swing.JPanel;
-import javax.swing.border.EmptyBorder;
-import java.awt.event.ActionListener;
-import java.awt.event.ActionEvent;
 import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JRadioButton;
 import javax.swing.JSpinner;
-import javax.swing.SpinnerDateModel;
-import java.util.Date;
-import java.util.Calendar;
 import javax.swing.JTextField;
+import javax.swing.SpinnerDateModel;
+import javax.swing.border.EmptyBorder;
 import javax.swing.border.TitledBorder;
 
 import logico.Cita;
 import logico.Clinica;
 import logico.Medico;
 import logico.Persona;
-import logico.Secretaria;
-import sun.misc.Cleaner;
-
-import javax.swing.JRadioButton;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
 
 public class RegCita extends JDialog {
 
@@ -92,7 +89,7 @@ public class RegCita extends JDialog {
 			panelCita.add(lblCodigoCita);
 
 			txtCodigoCita = new JTextField();
-			txtCodigoCita.setText("Cita - " + Clinica.codigoCita);
+			txtCodigoCita.setText("Cita - " + (Clinica.getInstance().getMiSecretaria().getMisCitas().size()+1));
 			txtCodigoCita.setBounds(73, 37, 146, 26);
 			panelCita.add(txtCodigoCita);
 			txtCodigoCita.setEditable(false);
@@ -176,7 +173,7 @@ public class RegCita extends JDialog {
 				@Override
 				public void keyTyped(KeyEvent e) {
 					char key = e.getKeyChar();
-					if (!Character.isAlphabetic(key))
+					if (Character.isDigit(key) || (!Character.isWhitespace(key) && !Character.isAlphabetic(key)))
 						e.consume();
 				}
 			});
@@ -283,6 +280,7 @@ public class RegCita extends JDialog {
 									Integer.parseInt(txtEdad.getText()), tieneSeguro, genero);
 							
 							Cita cita = new Cita(txtCodigoCita.getText(), txtCodigoDoctor.getText(), persona, (Date) spnFecha.getValue());
+							Clinica.getInstance().buscarMedicoByCode("Médico - "+txtCodigoDoctor.getText()).getMisCitas().add(cita);
 							Clinica.getInstance().getMiSecretaria().getMisCitas().add(cita);
 							Cleaner();
 						}
@@ -307,9 +305,8 @@ public class RegCita extends JDialog {
 	}
 
 	protected void Cleaner() {
-		Clinica.codigoCita++;
 		txtCodigoDoctor.setText("");
-		txtCodigoCita.setText("Cita - " + Clinica.codigoCita);
+		txtCodigoCita.setText("Cita - " + (Clinica.getInstance().getMiSecretaria().getMisCitas().size()+1));
 		txtCodigoPersona.setText("");
 		txtNombre.setText("");
 		txtEdad.setText("");

@@ -26,7 +26,6 @@ import javax.swing.table.DefaultTableModel;
 import logico.Clinica;
 import logico.Consulta;
 import logico.Enfermedad;
-import logico.Vacuna;
 
 public class ListConsulta extends JDialog {
 
@@ -107,7 +106,6 @@ public class ListConsulta extends JDialog {
 			panelConsulta.add(lblCodigoConsulta);
 
 			txtCodigoConsulta = new JTextField();
-			txtCodigoConsulta.setText("Consulta - " + Clinica.getInstance().codigoConsulta);
 			txtCodigoConsulta.setBounds(73, 37, 146, 26);
 			panelConsulta.add(txtCodigoConsulta);
 			txtCodigoConsulta.setEditable(false);
@@ -285,7 +283,6 @@ public class ListConsulta extends JDialog {
 						loadConsulta();
 						if (index == 0)
 							btnAnterior.setEnabled(false);
-						btnSiguiente.setEnabled(true);
 
 					}
 				}
@@ -294,11 +291,9 @@ public class ListConsulta extends JDialog {
 			panel.add(btnAnterior);
 			btnSiguiente.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
-					if (index < Clinica.getInstance().getMisMedicos().size()) {
+					if (index < Clinica.getInstance().getMisConsultas().size()) {
 						index++;
 						btnAnterior.setEnabled(true);
-						if (index >= Clinica.getInstance().getMisMedicos().size())
-							btnSiguiente.setEnabled(false);
 						loadConsulta();
 					}
 				}

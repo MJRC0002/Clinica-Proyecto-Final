@@ -1,45 +1,38 @@
 package visual;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.FlowLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.Calendar;
+import java.util.Date;
 
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JDialog;
-import javax.swing.JPanel;
-import javax.swing.border.EmptyBorder;
-import java.awt.event.ActionListener;
-import java.awt.event.ActionEvent;
 import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JRadioButton;
+import javax.swing.JScrollPane;
 import javax.swing.JSpinner;
-import javax.swing.SpinnerDateModel;
-import java.util.Date;
-import java.util.Calendar;
+import javax.swing.JTable;
 import javax.swing.JTextField;
+import javax.swing.SpinnerDateModel;
+import javax.swing.UIManager;
+import javax.swing.border.EmptyBorder;
 import javax.swing.border.TitledBorder;
 import javax.swing.table.DefaultTableModel;
-
-import com.sun.org.apache.bcel.internal.generic.LoadClass;
-import com.sun.xml.internal.bind.v2.model.core.ID;
 
 import logico.Cita;
 import logico.Clinica;
 import logico.Consulta;
 import logico.Enfermedad;
 import logico.HistorialMedico;
-import logico.Medico;
 import logico.Paciente;
 import logico.Persona;
-import logico.Vacuna;
-import sun.misc.Cleaner;
-
-import javax.swing.JRadioButton;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
-import javax.swing.UIManager;
-import java.awt.Color;
-import javax.swing.JScrollPane;
-import javax.swing.JTable;
-import javax.swing.JCheckBox;
 
 public class RegConsulta extends JDialog {
 
@@ -119,7 +112,7 @@ public class RegConsulta extends JDialog {
 			panelConsulta.add(lblCodigoConsulta);
 
 			txtCodigoConsulta = new JTextField();
-			txtCodigoConsulta.setText("Consulta - " + Clinica.getInstance().codigoConsulta);
+			txtCodigoConsulta.setText("Consulta - " + (Clinica.getInstance().getMisConsultas().size()+1));
 			txtCodigoConsulta.setBounds(73, 37, 146, 26);
 			panelConsulta.add(txtCodigoConsulta);
 			txtCodigoConsulta.setEditable(false);
@@ -179,6 +172,14 @@ public class RegConsulta extends JDialog {
 			panelConsulta.add(lblDiagnostico);
 
 			txtDiagnostico = new JTextField();
+			txtDiagnostico.addKeyListener(new KeyAdapter() {
+				@Override
+				public void keyTyped(KeyEvent e) {
+					char key = e.getKeyChar();
+					if (!Character.isDigit(key) && (!Character.isWhitespace(key) && !Character.isAlphabetic(key)))
+						e.consume();
+				}
+			});
 			txtDiagnostico.setBounds(244, 103, 233, 76);
 			panelConsulta.add(txtDiagnostico);
 			txtDiagnostico.setColumns(10);
@@ -188,6 +189,14 @@ public class RegConsulta extends JDialog {
 			panelConsulta.add(lblSintomas);
 
 			txtSintomas = new JTextField();
+			txtSintomas.addKeyListener(new KeyAdapter() {
+				@Override
+				public void keyTyped(KeyEvent e) {
+					char key = e.getKeyChar();
+					if (!Character.isDigit(key) && (!Character.isWhitespace(key) && !Character.isAlphabetic(key)))
+						e.consume();
+				}
+			});
 			txtSintomas.setColumns(10);
 			txtSintomas.setBounds(244, 225, 233, 76);
 			panelConsulta.add(txtSintomas);
@@ -309,44 +318,43 @@ public class RegConsulta extends JDialog {
 				btnRegistrar = new JButton("Registrar");
 				btnRegistrar.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent e) {
-							boolean tieneSeguro;
-							if (rdbtnTieneSeguro.isSelected())
-								tieneSeguro = true;
-							else
-								tieneSeguro = false;
+						boolean tieneSeguro;
+						if (rdbtnTieneSeguro.isSelected())
+							tieneSeguro = true;
+						else
+							tieneSeguro = false;
 
-							char genero;
-							if (rdbtnMasculino.isSelected())
-								genero = 'm';
-							else
-								genero = 'f';
+						char genero;
+						if (rdbtnMasculino.isSelected())
+							genero = 'm';
+						else
+							genero = 'f';
 
-							boolean enfermo;
-							if (rdbtnEstaEnfermo.isSelected())
-								enfermo = true;
-							else
-								enfermo = false;
+						boolean enfermo;
+						if (rdbtnEstaEnfermo.isSelected())
+							enfermo = true;
+						else
+							enfermo = false;
 
-							boolean bv;
-							if (rdbtnSiBajoVigilancia.isSelected())
-								bv = true;
-							else
-								bv = false;
+						boolean bv;
+						if (rdbtnSiBajoVigilancia.isSelected())
+							bv = true;
+						else
+							bv = false;
 
-							HistorialMedico historial = null;
-							Paciente paciente = new Paciente(txtCodigoPaciente.getText(), txtNombre.getText(),
-									Integer.parseInt(txtEdad.getText()), tieneSeguro, genero, enfermo, historial, false);
-							Enfermedad enfermedad = Clinica.getInstance()
-									.buscarEnfermedadByCode(codigoEnfermedad);
-							Consulta consulta = new Consulta(txtCodigoConsulta.getText(), paciente, enfermedad,
-									txtDiagnostico.getText(), txtSintomas.getText(), bv);
-							if (chckbxHistorialMedico.isSelected()) {
-								historial = new HistorialMedico();
-								historial.getMisConsultasRelevantes().add(consulta);
-							}
-							Clinica.getInstance().getMisConsultas().add(consulta);
-							dispose();
+						Paciente paciente = new Paciente(txtCodigoPaciente.getText(), txtNombre.getText(),
+								Integer.parseInt(txtEdad.getText()), tieneSeguro, genero, enfermo, false);
+						Enfermedad enfermedad = Clinica.getInstance().buscarEnfermedadByCode(codigoEnfermedad);
+						Consulta consulta = new Consulta(txtCodigoConsulta.getText(), paciente, enfermedad,
+								txtDiagnostico.getText(), txtSintomas.getText(), bv);
+						if (chckbxHistorialMedico.isSelected()) 
+							paciente.getMiHIstorial().getMisConsultasRelevantes().add(consulta);
+
 						
+						Clinica.getInstance().getMisConsultas().add(consulta);
+						Clinica.getInstance().getMisPacientes().add(paciente);
+						dispose();
+
 					}
 				});
 				btnRegistrar.setActionCommand("OK");

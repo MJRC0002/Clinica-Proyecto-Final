@@ -14,12 +14,13 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JTextField;
-
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.TitledBorder;
 
 import logico.Cita;
 import logico.Clinica;
+import logico.Medico;
+import logico.Secretaria;
 
 public class ListCita extends JDialog {
 
@@ -41,12 +42,14 @@ public class ListCita extends JDialog {
 	private JRadioButton rdbtnFemenino;
 	private JButton btnAnterior;
 	private JButton btnSiguiente;
-	private int index = 0, sizeCitas = Clinica.getInstance().getMiSecretaria().getMisCitas().size();
+	private int index = 0;
 	private Cita miCita = null;
+	private Object instancia = null;
 	private JButton btnRegistrarConsulta;
 	private JTextField txtFecha;
 
-	public ListCita(boolean hacerConsulta) {
+	public ListCita(boolean hacerConsulta,Object usuario) {
+		instancia = usuario;
 		setResizable(false);
 		setTitle("Listar Cita");
 		setBounds(100, 100, 535, 515);
@@ -191,11 +194,22 @@ public class ListCita extends JDialog {
 			panel.add(btnAnterior);
 			btnSiguiente.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
-					if (index < Clinica.getInstance().getMisMedicos().size()) {
-						index++;
-						btnAnterior.setEnabled(true);
-						loadCita();
+					if (usuario instanceof Medico) {
+						Medico medico = (Medico) usuario;
+						if (index < medico.getMisCitas().size()) {
+							index++;
+							btnAnterior.setEnabled(true);
+							loadCita();
+						}
+					} else {
+						Secretaria secretaria = (Secretaria) usuario;
+						if (index < secretaria.getMisCitas().size()) {
+							index++;
+							btnAnterior.setEnabled(true);
+							loadCita();
+						}
 					}
+
 				}
 			});
 			btnSiguiente.setBounds(342, 371, 115, 29);
@@ -238,12 +252,24 @@ public class ListCita extends JDialog {
 			}
 		}
 		loadCita();
+		
 	}
 
 	public void loadCita() {
+		int sizeCitas = 0;
+		if (instancia instanceof Medico) {
+			Medico medico = (Medico) instancia;
+			miCita = medico.getMisCitas().get(index);
+			sizeCitas = medico.getMisCitas().size();
 
+		} else if(instancia instanceof Secretaria) {
+			Secretaria secretaria = (Secretaria) instancia;
+			miCita = secretaria.getMisCitas().get(index);
+			sizeCitas =secretaria.getMisCitas().size();
+		}
+		
 		if (sizeCitas > 0 && index < sizeCitas) {
-			miCita = Clinica.getInstance().getMiSecretaria().getMisCitas().get(index);
+			
 			txtCodigoCita.setText(miCita.getCodCita());
 			txtCodigoDoctor.setText(miCita.getIdMedico());
 			txtCodigoPersona.setText(miCita.getPersona().getCodigo());

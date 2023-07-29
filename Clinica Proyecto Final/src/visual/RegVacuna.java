@@ -2,13 +2,18 @@ package visual;
 
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 import javax.swing.JButton;
 import javax.swing.JDialog;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
+import javax.swing.JTextField;
 import javax.swing.border.EmptyBorder;
-import java.awt.event.ActionListener;
-import java.awt.event.ActionEvent;
 import javax.swing.border.TitledBorder;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
@@ -17,12 +22,8 @@ import javax.swing.table.DefaultTableModel;
 import logico.Clinica;
 import logico.Enfermedad;
 import logico.Vacuna;
-
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.JTextField;
-import javax.swing.JScrollPane;
-import javax.swing.JTable;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 
 public class RegVacuna extends JDialog {
 
@@ -77,7 +78,7 @@ public class RegVacuna extends JDialog {
 
 			txtCodigo = new JTextField();
 			txtCodigo.setEditable(false);
-			txtCodigo.setText("Vac - " + Clinica.getInstance().codigoVacuna);
+			txtCodigo.setText("Vac - " + (Clinica.getInstance().getMisVacunas().size()+1));
 			txtCodigo.setBounds(94, 13, 116, 22);
 			panel.add(txtCodigo);
 			txtCodigo.setColumns(10);
@@ -87,6 +88,14 @@ public class RegVacuna extends JDialog {
 			panel.add(lblNombre);
 
 			txtNombre = new JTextField();
+			txtNombre.addKeyListener(new KeyAdapter() {
+				@Override
+				public void keyTyped(KeyEvent e) {
+					char key = e.getKeyChar();
+					if (!Character.isWhitespace(key) && !Character.isAlphabetic(key))
+						e.consume();
+				}
+			});
 			txtNombre.setBounds(94, 48, 116, 22);
 			panel.add(txtNombre);
 			txtNombre.setColumns(10);
@@ -96,6 +105,14 @@ public class RegVacuna extends JDialog {
 			panel.add(lblDescripción);
 
 			txtDescripción = new JTextField();
+			txtDescripción.addKeyListener(new KeyAdapter() {
+				@Override
+				public void keyTyped(KeyEvent e) {
+					char key = e.getKeyChar();
+					if (!Character.isDigit(key) && (!Character.isWhitespace(key) && !Character.isAlphabetic(key)))
+						e.consume();
+				}
+			});
 			txtDescripción.setColumns(10);
 			txtDescripción.setBounds(12, 118, 325, 165);
 			panel.add(txtDescripción);
@@ -219,8 +236,7 @@ public class RegVacuna extends JDialog {
 	}
 
 	protected void clean() {
-		Clinica.getInstance().codigoVacuna++;
-		txtCodigo.setText("Vac - " + Clinica.getInstance().codigoVacuna);
+		txtCodigo.setText("Vac - " + (Clinica.getInstance().getMisVacunas().size()+1));
 		txtNombre.setText("");
 		txtDescripción.setText("");
 		enferSeleccionadasModel.setRowCount(0);

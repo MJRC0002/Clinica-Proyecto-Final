@@ -3,12 +3,13 @@ package logico;
 import java.io.Serializable;
 import java.util.ArrayList;
 
-import com.sun.org.apache.xml.internal.resolver.helpers.PublicId;
-
-import javafx.scene.control.IndexRange;
 
 public class Clinica implements Serializable {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private ArrayList<Medico> misMedicos;
 	private ArrayList<Paciente> misPacientes;
 	private ArrayList<Vacuna> misVacunas;
@@ -17,8 +18,7 @@ public class Clinica implements Serializable {
 	private static Clinica miClinica = null;
 	private Secretaria miSecretaria = null;
 	private Administrador miAdministrador = null;
-	public static int codigoVacuna = 1, codigoPersonas = 1, codigoCita = 1, codigoMedico = 1, codigoConsulta = 1,
-			codigoHistorial = 1;
+	
 
 	public Clinica() {
 		super();

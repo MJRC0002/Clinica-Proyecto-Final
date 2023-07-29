@@ -1,11 +1,22 @@
 package visual;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.FlowLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.ArrayList;
 
 import javax.swing.JButton;
 import javax.swing.JDialog;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
+import javax.swing.JTextField;
+import javax.swing.ScrollPaneConstants;
+import javax.swing.UIManager;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.TitledBorder;
 import javax.swing.event.ListSelectionEvent;
@@ -15,18 +26,8 @@ import javax.swing.table.DefaultTableModel;
 import logico.Clinica;
 import logico.Enfermedad;
 import logico.Vacuna;
-
-import java.awt.event.ActionListener;
-import java.util.ArrayList;
-import java.awt.event.ActionEvent;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.JTextField;
-import javax.swing.JScrollPane;
-import javax.swing.ScrollPaneConstants;
-import javax.swing.JTable;
-import javax.swing.UIManager;
-import java.awt.Color;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 
 public class RegEnfermedad extends JDialog {
 
@@ -87,6 +88,14 @@ public class RegEnfermedad extends JDialog {
 			}
 			{
 				txtCodigo = new JTextField();
+				txtCodigo.addKeyListener(new KeyAdapter() {
+					@Override
+					public void keyTyped(KeyEvent e) {
+						char key = e.getKeyChar();
+						if (!Character.isDigit(key) && !Character.isAlphabetic(key))
+							e.consume();
+					}
+				});
 				txtCodigo.setBounds(12, 37, 116, 30);
 				panel.add(txtCodigo);
 				txtCodigo.setColumns(10);
@@ -98,6 +107,14 @@ public class RegEnfermedad extends JDialog {
 			}
 			{
 				txtNombre = new JTextField();
+				txtNombre.addKeyListener(new KeyAdapter() {
+					@Override
+					public void keyTyped(KeyEvent e) {
+						char key = e.getKeyChar();
+						if (!Character.isWhitespace(key) && !Character.isAlphabetic(key))
+							e.consume();
+					}
+				});
 				txtNombre.setColumns(10);
 				txtNombre.setBounds(189, 37, 155, 30);
 				panel.add(txtNombre);
@@ -109,6 +126,14 @@ public class RegEnfermedad extends JDialog {
 			}
 			{
 				txtSintomas = new JTextField();
+				txtSintomas.addKeyListener(new KeyAdapter() {
+					@Override
+					public void keyTyped(KeyEvent e) {
+						char key = e.getKeyChar();
+						if (!Character.isDigit(key) && (!Character.isWhitespace(key) && !Character.isAlphabetic(key)))
+							e.consume();
+					}
+				});
 				txtSintomas.setColumns(10);
 				txtSintomas.setBounds(12, 127, 155, 75);
 				panel.add(txtSintomas);
@@ -120,6 +145,14 @@ public class RegEnfermedad extends JDialog {
 			}
 			{
 				txtMedicamentos = new JTextField();
+				txtMedicamentos.addKeyListener(new KeyAdapter() {
+					@Override
+					public void keyTyped(KeyEvent e) {
+						char key = e.getKeyChar();
+						if (!Character.isDigit(key) && (!Character.isWhitespace(key) && !Character.isAlphabetic(key)))
+							e.consume();
+					}
+				});
 				txtMedicamentos.setColumns(10);
 				txtMedicamentos.setBounds(189, 127, 241, 75);
 				panel.add(txtMedicamentos);

@@ -1,36 +1,33 @@
 package visual;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.FlowLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.util.ArrayList;
 
 import javax.swing.JButton;
 import javax.swing.JDialog;
-import javax.swing.JPanel;
-import javax.swing.border.EmptyBorder;
-import java.awt.event.ActionListener;
-import java.awt.event.ActionEvent;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
-
-import java.util.ArrayList;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
 import javax.swing.JTextField;
+import javax.swing.ScrollPaneConstants;
+import javax.swing.UIManager;
+import javax.swing.border.EmptyBorder;
 import javax.swing.border.TitledBorder;
 import javax.swing.table.DefaultTableModel;
 
 import logico.Clinica;
 import logico.Enfermedad;
 import logico.Medico;
-import logico.Vacuna;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
-import javax.swing.UIManager;
-import java.awt.Color;
-import javax.swing.JScrollPane;
-import javax.swing.JTable;
-import javax.swing.ScrollPaneConstants;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import javax.swing.border.LineBorder;
 
 public class RegMedico extends JDialog {
 
@@ -112,7 +109,7 @@ public class RegMedico extends JDialog {
 			panelDatosMedicos.add(lblCodigoCita);
 
 			txtCodigoMedico = new JTextField();
-			txtCodigoMedico.setText("Médico - " + Clinica.codigoMedico);
+			txtCodigoMedico.setText("Médico - " + (Clinica.getInstance().getMisMedicos().size()+1));
 			txtCodigoMedico.setBounds(73, 37, 146, 26);
 			panelDatosMedicos.add(txtCodigoMedico);
 			txtCodigoMedico.setEditable(false);
@@ -127,7 +124,7 @@ public class RegMedico extends JDialog {
 				@Override
 				public void keyTyped(KeyEvent e) {
 					char key = e.getKeyChar();
-					if (!Character.isAlphabetic(key))
+					if (Character.isDigit(key) || (!Character.isWhitespace(key) && !Character.isAlphabetic(key)))
 						e.consume();
 				}
 			});
@@ -140,6 +137,14 @@ public class RegMedico extends JDialog {
 			panelDatosMedicos.add(lblEspecializacion);
 
 			txtEspecializacion = new JTextField();
+			txtEspecializacion.addKeyListener(new KeyAdapter() {
+				@Override
+				public void keyTyped(KeyEvent e) {
+					char key = e.getKeyChar();
+					if (Character.isDigit(key) || (!Character.isWhitespace(key) && !Character.isAlphabetic(key)))
+						e.consume();
+				}
+			});
 			txtEspecializacion.setBounds(358, 76, 210, 26);
 			panelDatosMedicos.add(txtEspecializacion);
 			txtEspecializacion.setColumns(10);
@@ -149,6 +154,14 @@ public class RegMedico extends JDialog {
 			panelDatosMedicos.add(lblTelefono);
 
 			txtTelefono = new JTextField();
+			txtTelefono.addKeyListener(new KeyAdapter() {
+				@Override
+				public void keyTyped(KeyEvent e) {
+					char key = e.getKeyChar();
+					if (!Character.isDigit(key))
+						e.consume();
+				}
+			});
 			txtTelefono.setBounds(358, 37, 146, 26);
 			panelDatosMedicos.add(txtTelefono);
 			txtTelefono.setColumns(10);
@@ -365,8 +378,7 @@ public class RegMedico extends JDialog {
 	}
 
 	protected void Cleaner() {
-		Clinica.codigoMedico++;
-		txtCodigoMedico.setText("Médico - " + Clinica.codigoMedico);
+		txtCodigoMedico.setText("Médico - " + (Clinica.getInstance().getMisMedicos().size()+1));
 		txtContrasenna.setText("");
 		txtUser.setText("");
 		txtNombre.setText("");
