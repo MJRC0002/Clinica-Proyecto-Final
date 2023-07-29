@@ -5,6 +5,7 @@ import java.awt.Color;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 
@@ -32,7 +33,6 @@ public class ListConsulta extends JDialog {
 	private final JPanel contentPanel = new JPanel();
 	private JButton btnCancelar;
 	private JPanel panel;
-	private JSpinner spnFecha;
 	private JTextField txtCodigoConsulta;
 	private JTextField txtNombre;
 	private JLabel lblEdad;
@@ -62,6 +62,7 @@ public class ListConsulta extends JDialog {
 	private int index = 0;
 	private JButton btnAnterior;
 	private JButton btnSiguiente;
+	private JTextField txtFecha;
 
 	/**
 	 * Launch the application.
@@ -114,12 +115,6 @@ public class ListConsulta extends JDialog {
 			JLabel lblFecha = new JLabel("Fecha:");
 			lblFecha.setBounds(244, 40, 53, 20);
 			panelConsulta.add(lblFecha);
-
-			spnFecha = new JSpinner();
-			spnFecha.setEnabled(false);
-			spnFecha.setBounds(294, 37, 183, 26);
-			panelConsulta.add(spnFecha);
-			spnFecha.setModel(new SpinnerDateModel(new Date(), null, null, Calendar.DAY_OF_YEAR));
 
 			JPanel panelEnfermedad = new JPanel();
 			panelEnfermedad.setBorder(new TitledBorder(null, "Enfermedades registradas", TitledBorder.LEADING,
@@ -181,6 +176,12 @@ public class ListConsulta extends JDialog {
 			txtSintomas.setColumns(10);
 			txtSintomas.setBounds(244, 225, 233, 76);
 			panelConsulta.add(txtSintomas);
+			
+			txtFecha = new JTextField();
+			txtFecha.setEditable(false);
+			txtFecha.setBounds(298, 37, 146, 26);
+			panelConsulta.add(txtFecha);
+			txtFecha.setColumns(10);
 
 			panelPersona = new JPanel();
 			panelPersona.setBorder(new TitledBorder(UIManager.getBorder("TitledBorder.border"),
@@ -330,33 +331,34 @@ public class ListConsulta extends JDialog {
 			txtDiagnostico.setText(miConsulta.getDiagnostico());
 			txtEdad.setText(Integer.toString(miConsulta.getPaciente().getEdad()));
 			txtNombre.setText(miConsulta.getPaciente().getNombre());
-			spnFecha.setToolTipText(new Date().toString());
+			SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm dd/MM/yyyy");
+			txtFecha.setText(dateFormat.format(miConsulta.getFecha()));
 			txtDiagnostico.setText(miConsulta.getDiagnostico());
 			txtSintomas.setText(miConsulta.getSintomas());
 			txtEnfermedad.setText(miConsulta.getEnfermedad().getNombre());
 
 			if (miConsulta.isBajoVig()) {
-				rdbtnSiBajoVigilancia.setEnabled(true);
+				rdbtnSiBajoVigilancia.setSelected(true);
 			} else {
-				rdbtnNoBajoVigilancia.setEnabled(true);
+				rdbtnNoBajoVigilancia.setSelected(true);
 			}
 
 			if (miConsulta.getPaciente().getGenero() == 'm') {
-				rdbtnMasculino.setEnabled(true);
+				rdbtnMasculino.setSelected(true);
 			} else {
-				rdbtnFemenino.setEnabled(true);
+				rdbtnFemenino.setSelected(true);
 			}
 
 			if (miConsulta.getPaciente().isSeguroMedico()) {
-				rdbtnTieneSeguro.setEnabled(true);
+				rdbtnTieneSeguro.setSelected(true);
 			} else {
-				rdbtnNoTieneSeguro.setEnabled(true);
+				rdbtnNoTieneSeguro.setSelected(true);
 			}
 
 			if (miConsulta.getPaciente().isEnfermo()) {
-				rdbtnEstaEnfermo.setEnabled(true);
+				rdbtnEstaEnfermo.setSelected(true);
 			} else {
-				rdbtnNoEstarEnfermo.setEnabled(true);
+				rdbtnNoEstarEnfermo.setSelected(true);
 			}
 			loadEnfermedades();
 			if (index < size-1) 

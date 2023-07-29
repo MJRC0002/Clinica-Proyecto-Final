@@ -347,7 +347,7 @@ public class RegConsulta extends JDialog {
 								Integer.parseInt(txtEdad.getText()), tieneSeguro, genero, enfermo, false);
 						Enfermedad enfermedad = Clinica.getInstance().buscarEnfermedadByCode(codigoEnfermedad);
 						Consulta consulta = new Consulta(txtCodigoConsulta.getText(), paciente, enfermedad,
-								txtDiagnostico.getText(), txtSintomas.getText(), bv);
+								txtDiagnostico.getText(), txtSintomas.getText(), bv,(Date) spnFecha.getValue());
 						if (chckbxHistorialMedico.isSelected())
 							paciente.getMiHIstorial().getMisConsultasRelevantes().add(consulta);
 
