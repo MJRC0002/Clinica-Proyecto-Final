@@ -6,8 +6,10 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 
 import javax.swing.JButton;
 import javax.swing.JDialog;
@@ -24,6 +26,7 @@ import logico.Cita;
 import logico.Clinica;
 import logico.Medico;
 import logico.Persona;
+import javax.swing.JComboBox;
 
 public class RegCita extends JDialog {
 
@@ -33,7 +36,6 @@ public class RegCita extends JDialog {
 	private JPanel panel;
 	private JSpinner spnFecha;
 	private JTextField txtCodigoCita;
-	private JTextField txtCodigoDoctor;
 	private JTextField txtNombre;
 	private JLabel lblEdad;
 	private JTextField txtEdad;
@@ -45,6 +47,7 @@ public class RegCita extends JDialog {
 	private JLabel lblGenero;
 	private JRadioButton rdbtnMasculino;
 	private JRadioButton rdbtnFemenino;
+	private int index;
 
 	/**
 	 * Launch the application.
@@ -99,19 +102,6 @@ public class RegCita extends JDialog {
 			lblCodigoDoctor.setBounds(15, 79, 139, 20);
 			panelCita.add(lblCodigoDoctor);
 
-			txtCodigoDoctor = new JTextField();
-			txtCodigoDoctor.addKeyListener(new KeyAdapter() {
-				@Override
-				public void keyTyped(KeyEvent e) {
-					char key = e.getKeyChar();
-					if (!Character.isDigit(key))
-						e.consume();
-				}
-			});
-			txtCodigoDoctor.setBounds(151, 79, 146, 26);
-			panelCita.add(txtCodigoDoctor);
-			txtCodigoDoctor.setColumns(10);
-
 			JLabel lblFecha = new JLabel("Fecha:");
 			lblFecha.setBounds(244, 40, 53, 20);
 			panelCita.add(lblFecha);
@@ -120,24 +110,24 @@ public class RegCita extends JDialog {
 			spnFecha.setBounds(294, 37, 155, 26);
 			panelCita.add(spnFecha);
 			spnFecha.setModel(new SpinnerDateModel(new Date(), null, null, Calendar.DAY_OF_YEAR));
+			
+			ArrayList<Medico> misMedicos = Clinica.getInstance().getMisMedicos();
+			List<String> medicoStrings = new ArrayList<>();
+			for (Medico medico : misMedicos) {
+			    String medicoString = medico.getCodigo() + " | " + medico.getNombre() + " | " + medico.getEspecializacion();
+			    medicoStrings.add(medicoString);
+			}
 
-			JButton btnBuscar = new JButton("Buscar");
-			btnBuscar.addActionListener(new ActionListener() {
+			String[] medicoArray = medicoStrings.toArray(new String[0]);
+			JComboBox<String> comboBox = new JComboBox<String>();
+			comboBox.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
-					Medico medico = Clinica.getInstance().buscarMedicoByCode("Médico - "+txtCodigoDoctor.getText());
-					if (medico != null) {
-						txtCodigoPersona.setEnabled(true);
-						txtEdad.setEnabled(true);
-						txtNombre.setEnabled(true);
-						rdbtnMasculino.setEnabled(true);
-						rdbtnFemenino.setEnabled(true);
-						rdbtnNoTieneSeguro.setEnabled(true);
-						rdbtnTieneSeguro.setEnabled(true);
-					}
+					index = comboBox.getSelectedIndex();
 				}
 			});
-			btnBuscar.setBounds(304, 78, 115, 29);
-			panelCita.add(btnBuscar);
+			comboBox.setModel(new javax.swing.DefaultComboBoxModel<>(medicoArray));
+			comboBox.setBounds(153, 79, 296, 26);
+			panelCita.add(comboBox);
 
 			panelPersona = new JPanel();
 			panelPersona.setBorder(new TitledBorder(null, "Informaci\u00F3n de persona:", TitledBorder.LEADING,
@@ -159,7 +149,6 @@ public class RegCita extends JDialog {
 						e.consume();
 				}
 			});
-			txtCodigoPersona.setEnabled(false);
 			txtCodigoPersona.setColumns(10);
 			txtCodigoPersona.setBounds(72, 33, 146, 26);
 			panelPersona.add(txtCodigoPersona);
@@ -177,7 +166,6 @@ public class RegCita extends JDialog {
 						e.consume();
 				}
 			});
-			txtNombre.setEnabled(false);
 			txtNombre.setColumns(10);
 			txtNombre.setBounds(83, 72, 146, 26);
 			panelPersona.add(txtNombre);
@@ -195,7 +183,6 @@ public class RegCita extends JDialog {
 						e.consume();
 				}
 			});
-			txtEdad.setEnabled(false);
 			txtEdad.setColumns(10);
 			txtEdad.setBounds(304, 33, 146, 26);
 			panelPersona.add(txtEdad);
@@ -211,7 +198,6 @@ public class RegCita extends JDialog {
 					rdbtnNoTieneSeguro.setSelected(false);
 				}
 			});
-			rdbtnTieneSeguro.setEnabled(false);
 			rdbtnTieneSeguro.setBounds(365, 71, 57, 29);
 			panelPersona.add(rdbtnTieneSeguro);
 
@@ -222,7 +208,6 @@ public class RegCita extends JDialog {
 					rdbtnNoTieneSeguro.setSelected(true);
 				}
 			});
-			rdbtnNoTieneSeguro.setEnabled(false);
 			rdbtnNoTieneSeguro.setBounds(424, 71, 65, 29);
 			panelPersona.add(rdbtnNoTieneSeguro);
 
@@ -238,7 +223,6 @@ public class RegCita extends JDialog {
 					btnRegistrar.setEnabled(true);
 				}
 			});
-			rdbtnMasculino.setEnabled(false);
 			rdbtnMasculino.setBounds(94, 117, 57, 29);
 			panelPersona.add(rdbtnMasculino);
 
@@ -250,7 +234,6 @@ public class RegCita extends JDialog {
 					btnRegistrar.setEnabled(true);
 				}
 			});
-			rdbtnFemenino.setEnabled(false);
 			rdbtnFemenino.setBounds(153, 117, 65, 29);
 			panelPersona.add(rdbtnFemenino);
 		}
@@ -278,9 +261,9 @@ public class RegCita extends JDialog {
 							
 							Persona persona = new Persona(txtCodigoPersona.getText(), txtNombre.getText(),
 									Integer.parseInt(txtEdad.getText()), tieneSeguro, genero);
-							
-							Cita cita = new Cita(txtCodigoCita.getText(), txtCodigoDoctor.getText(), persona, (Date) spnFecha.getValue());
-							Clinica.getInstance().buscarMedicoByCode("Médico - "+txtCodigoDoctor.getText()).getMisCitas().add(cita);
+							Medico medico = Clinica.getInstance().getMisMedicos().get(index);
+							Cita cita = new Cita(txtCodigoCita.getText(), medico.getCodigo(), persona, (Date) spnFecha.getValue());
+							medico.getMisCitas().add(cita);
 							Clinica.getInstance().getMiSecretaria().getMisCitas().add(cita);
 							Cleaner();
 						}
@@ -305,7 +288,7 @@ public class RegCita extends JDialog {
 	}
 
 	protected void Cleaner() {
-		txtCodigoDoctor.setText("");
+		//txtCodigoDoctor.setText("");
 		txtCodigoCita.setText("Cita - " + (Clinica.getInstance().getMiSecretaria().getMisCitas().size()+1));
 		txtCodigoPersona.setText("");
 		txtNombre.setText("");

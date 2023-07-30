@@ -11,7 +11,7 @@ public class Medico implements Serializable {
 	private String usuario;
 	private String contrasenna;
 	private String especializacion;
-	private ArrayList<Paciente> misPacientes;
+	private ArrayList<Consulta> misConsultas;
 	private ArrayList<Enfermedad> misEnfermedades;
 	private ArrayList<Cita> misCitas;
 
@@ -23,7 +23,7 @@ public class Medico implements Serializable {
 		this.especializacion = especializacion;
 		this.usuario = usuario;
 		this.contrasenna = contrasenna;
-		misPacientes = new ArrayList<Paciente>();
+		misConsultas = new ArrayList<Consulta>();
 		misEnfermedades = new ArrayList<Enfermedad>();
 		misCitas = new ArrayList<Cita>();
 	}
@@ -44,8 +44,8 @@ public class Medico implements Serializable {
 		return especializacion;
 	}
 
-	public ArrayList<Paciente> getMisPacientes() {
-		return misPacientes;
+	public ArrayList<Consulta> getMisConsultas() {
+		return misConsultas;
 	}
 
 	public ArrayList<Enfermedad> getMisEnfermedades() {

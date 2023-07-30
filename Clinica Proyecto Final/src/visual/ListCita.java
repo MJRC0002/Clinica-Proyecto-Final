@@ -48,7 +48,7 @@ public class ListCita extends JDialog {
 	private JButton btnRegistrarConsulta;
 	private JTextField txtFecha;
 
-	public ListCita(boolean hacerConsulta,Object usuario) {
+	public ListCita(boolean hacerConsulta, Object usuario) {
 		instancia = usuario;
 		setResizable(false);
 		setTitle("Listar Cita");
@@ -219,10 +219,8 @@ public class ListCita extends JDialog {
 				btnRegistrarConsulta = new JButton("Registrar consulta");
 				btnRegistrarConsulta.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent e) {
-						RegConsulta regConsulta = new RegConsulta(
-								Clinica.getInstance().getMiSecretaria().getMisCitas().get(index));
+						RegConsulta regConsulta = new RegConsulta(miCita);
 						dispose();
-
 						regConsulta.setModal(true);
 						regConsulta.setVisible(true);
 					}
@@ -252,7 +250,7 @@ public class ListCita extends JDialog {
 			}
 		}
 		loadCita();
-		
+
 	}
 
 	public void loadCita() {
@@ -262,14 +260,14 @@ public class ListCita extends JDialog {
 			miCita = medico.getMisCitas().get(index);
 			sizeCitas = medico.getMisCitas().size();
 
-		} else if(instancia instanceof Secretaria) {
+		} else if (instancia instanceof Secretaria) {
 			Secretaria secretaria = (Secretaria) instancia;
 			miCita = secretaria.getMisCitas().get(index);
-			sizeCitas =secretaria.getMisCitas().size();
+			sizeCitas = secretaria.getMisCitas().size();
 		}
-		
+
 		if (sizeCitas > 0 && index < sizeCitas) {
-			
+
 			txtCodigoCita.setText(miCita.getCodCita());
 			txtCodigoDoctor.setText(miCita.getIdMedico());
 			txtCodigoPersona.setText(miCita.getPersona().getCodigo());
@@ -278,14 +276,14 @@ public class ListCita extends JDialog {
 			SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm dd/MM/yyyy");
 			txtFecha.setText(dateFormat.format(miCita.getFecha()));
 			if (miCita.getPersona().getGenero() == 'm')
-				rdbtnMasculino.setEnabled(true);
+				rdbtnMasculino.setSelected(true);
 			else
-				rdbtnFemenino.setEnabled(true);
+				rdbtnFemenino.setSelected(true);
 
 			if (miCita.getPersona().isSeguroMedico())
-				rdbtnTieneSeguro.setEnabled(true);
+				rdbtnTieneSeguro.setSelected(true);
 			else
-				rdbtnNoTieneSeguro.setEnabled(true);
+				rdbtnNoTieneSeguro.setSelected(true);
 
 			if (index < sizeCitas - 1)
 				btnSiguiente.setEnabled(true);

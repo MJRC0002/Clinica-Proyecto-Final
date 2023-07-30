@@ -215,13 +215,16 @@ public class Principal extends JFrame {
 		JMenuItem mntmRegistrarConsulta = new JMenuItem("Registrar consulta");
 		mntmRegistrarConsulta.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				ListCita cita = new ListCita(true, usuario);
-				cita.setModal(true);
-				cita.setVisible(true);
 				if (usuario instanceof Medico && ((Medico) usuario).getMisCitas().size() == 0)
 					JOptionPane.showMessageDialog(null,
 							"Usted no puede registrar una consulta porque no tiene citas disponibles.",
 							"No tiene citas", JOptionPane.ERROR_MESSAGE);
+				else {
+					ListCita cita = new ListCita(true, usuario);
+					cita.setModal(true);
+					cita.setVisible(true);
+				}
+
 			}
 		});
 		mnConsulta.add(mntmRegistrarConsulta);
@@ -304,12 +307,23 @@ public class Principal extends JFrame {
 		JMenuItem mntmListarVacuna = new JMenuItem("Listar vacuna");
 		mntmListarVacuna.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				ListVacuna vacuna = new ListVacuna();
+				ListVacuna vacuna = new ListVacuna(null, null);
 				vacuna.setModal(true);
 				vacuna.setVisible(true);
 			}
 		});
 		mnVacuna.add(mntmListarVacuna);
+		
+		JMenuItem mntmAplicarVacuna = new JMenuItem("Aplicar vacuna");
+		mntmAplicarVacuna.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				Medico medico = (Medico) usuario;
+				AplicarVacuna aplicarVacuna = new AplicarVacuna(Clinica.getInstance().pacientesEnfermosConVacunasDisponibles(medico.getMisConsultas()));
+				aplicarVacuna.setModal(true);
+				aplicarVacuna.setVisible(true);
+			}
+		});
+		mnVacuna.add(mntmAplicarVacuna);
 
 		JMenu mnSecretaria = new JMenu("Secretaria");
 		menuBar.add(mnSecretaria);
@@ -404,6 +418,7 @@ public class Principal extends JFrame {
 			mnRespaldo.setEnabled(false);
 			mntmRegistrarEnfermedad.setEnabled(false);
 			mntmRegistrarVacuna.setEnabled(false);
+			
 		} else if (usuario instanceof Secretaria) {
 			mnConsulta.setEnabled(false);
 			mnRespaldo.setEnabled(false);

@@ -40,6 +40,11 @@ public class Paciente extends Persona {
 	public HistorialMedico getMiHIstorial() {
 		return miHistorial;
 	}
+	public void vacunar(Vacuna vacuna) {
+		if(!vacunado)
+			vacunado = true;
+		misVacunas.add(vacuna);
+	}
 
 	public boolean isVacunado() {
 		return vacunado;

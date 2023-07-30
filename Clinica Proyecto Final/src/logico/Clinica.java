@@ -7,6 +7,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+import com.sun.org.apache.bcel.internal.generic.AALOAD;
+
 public class Clinica implements Serializable {
 
 	/**
@@ -261,18 +263,36 @@ public class Clinica implements Serializable {
 	public Secretaria getMiSecretaria() {
 		return miSecretaria;
 	}
-	
-	public ArrayList<Consulta> ConsultasDeLaSemana(){
-		ArrayList<Consulta>consultaSemana = new ArrayList<Consulta>();
+
+	public ArrayList<Consulta> ConsultasDeLaSemana() {
+		ArrayList<Consulta> consultaSemana = new ArrayList<Consulta>();
 		for (Consulta consulta : misConsultas) {
-			if(calcularDiferenciaDias(consulta.getFecha()) <= 7)
+			if (calcularDiferenciaDias(consulta.getFecha()) <= 7)
 				consultaSemana.add(consulta);
 		}
-	
+
 		return consultaSemana;
 	}
+
 	public long calcularDiferenciaDias(Date fechaObjeto) {
-        long diffInMillis = new Date().getTime() - fechaObjeto.getTime();
-        return TimeUnit.DAYS.convert(diffInMillis, TimeUnit.MILLISECONDS);
-    }
+		long diffInMillis = new Date().getTime() - fechaObjeto.getTime();
+		return TimeUnit.DAYS.convert(diffInMillis, TimeUnit.MILLISECONDS);
+	}
+
+	public ArrayList<Consulta> pacientesEnfermosConVacunasDisponibles(ArrayList<Consulta> consultas) {
+		ArrayList<Consulta> aux = new ArrayList<Consulta>();
+		for (Consulta consulta2 : consultas) {
+			for (Vacuna vacuna : misVacunas) {
+				if (vacuna.getLasEnfermedades().contains(consulta2.getEnfermedad()) && !vacuna.isUsed()) {
+					aux.add(consulta2);
+
+				}
+			}
+		}
+		if (aux.size() > 0)
+			return aux;
+		else {
+			return null;
+		}
+	}
 }

@@ -23,6 +23,7 @@ import javax.swing.table.DefaultTableModel;
 
 import logico.Cita;
 import logico.Clinica;
+import logico.Consulta;
 import logico.Enfermedad;
 import logico.Medico;
 import logico.Paciente;
@@ -236,15 +237,15 @@ public class ListarMedicos extends JDialog {
 		rowEnfermedad = new Object[tableEnfermedades.getColumnCount()];
 		rowCita = new Object[tableCitas.getColumnCount()];
 
-		for (Paciente paciente : miMedico.getMisPacientes()) {
-			rowPaciente[0] = paciente.getCodigo();
-			rowPaciente[1] = paciente.getNombre();
-			rowPaciente[2] = Integer.toString(paciente.getEdad());
-			if (paciente.isSeguroMedico())
+		for (Consulta consulta : miMedico.getMisConsultas()) {
+			rowPaciente[0] = consulta.getPaciente().getCodigo();
+			rowPaciente[1] = consulta.getPaciente().getNombre();
+			rowPaciente[2] = Integer.toString(consulta.getPaciente().getEdad());
+			if (consulta.getPaciente().isSeguroMedico())
 				rowPaciente[3] = "Si";
 			else
 				rowPaciente[3] = "No";
-			rowPaciente[4] = paciente.getGenero();
+			rowPaciente[4] = consulta.getPaciente().getGenero();
 			pacienteModel.addRow(rowPaciente);
 		}
 

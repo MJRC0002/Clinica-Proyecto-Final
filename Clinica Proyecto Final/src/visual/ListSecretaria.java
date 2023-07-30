@@ -24,22 +24,7 @@ public class ListSecretaria extends JDialog {
 	private JTextField txtUsuario;
 	private JTextField txtContrasena;
 
-	/**
-	 * Launch the application.
-	 */
-	public static void main(String[] args) {
-		try {
-			ListSecretaria dialog = new ListSecretaria();
-			dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
-			dialog.setVisible(true);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
-
-	/**
-	 * Create the dialog.
-	 */
+	
 	public ListSecretaria() {
 		setTitle("Listar Secretaria");
 		setResizable(false);

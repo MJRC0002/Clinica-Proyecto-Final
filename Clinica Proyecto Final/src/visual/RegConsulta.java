@@ -405,7 +405,7 @@ public class RegConsulta extends JDialog {
 
 						if (txtCodigoConsulta.getText().isEmpty() || txtNombre.getText().isEmpty()
 								|| txtCodigoPaciente.getText().isEmpty() || txtDiagnostico.getText().isEmpty()
-								|| txtEnfermedad.getText().isEmpty() || txtSintomas.getText().isEmpty()) {
+								|| txtSintomas.getText().isEmpty()) {
 							JOptionPane.showMessageDialog(null,
 									"Debes completar todos los campos para registrar una consulta",
 									"No puedes registrar", JOptionPane.ERROR_MESSAGE);
@@ -425,8 +425,8 @@ public class RegConsulta extends JDialog {
 							Clinica.getInstance().getMisConsultas().add(consulta);
 							Clinica.getInstance().getMisPacientes().add(paciente);
 							// borrar cita para medico y secretaria.
-							Medico medico = Clinica.getInstance().buscarMedicoByCode("Médico - " + cita.getIdMedico());
-							medico.getMisCitas().remove(cita);
+							Clinica.getInstance().buscarMedicoByCode(cita.getIdMedico()).getMisCitas().remove(cita);
+							Clinica.getInstance().buscarMedicoByCode(cita.getIdMedico()).getMisConsultas().add(consulta);
 							Clinica.getInstance().getMiSecretaria().getMisCitas().remove(cita);
 							dispose();
 						}

@@ -10,6 +10,7 @@ import java.util.ArrayList;
 
 import javax.swing.JButton;
 import javax.swing.JDialog;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
@@ -19,6 +20,7 @@ import javax.swing.table.DefaultTableModel;
 
 import logico.Clinica;
 import logico.Enfermedad;
+import logico.Paciente;
 import logico.Vacuna;
 
 public class ListVacuna extends JDialog {
@@ -27,27 +29,12 @@ public class ListVacuna extends JDialog {
 	private static JTable tableVacunas;
 	private static DefaultTableModel modelo;
 	private static Object[] row;
-	private Vacuna selected = null;
 	private JButton btnCancel;
 	private JButton btnDelete;
+	private JButton btnAplicarVacuna;
+	private int index;
 
-	/**
-	 * Launch the application.
-	 */
-	public static void main(String[] args) {
-		try {
-			ListVacuna dialog = new ListVacuna();
-			dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
-			dialog.setVisible(true);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
-
-	/**
-	 * Create the dialog.
-	 */
-	public ListVacuna() {
+	public ListVacuna(Enfermedad enfermedad, Paciente paciente) {
 		setResizable(false);
 		setTitle("Listado Vacunas");
 		setBounds(100, 100, 621, 384);
@@ -69,12 +56,12 @@ public class ListVacuna extends JDialog {
 					tableVacunas.addMouseListener(new MouseAdapter() {
 						@Override
 						public void mouseClicked(MouseEvent e) {
-							int index = tableVacunas.getSelectedRow();
+							index = tableVacunas.getSelectedRow();
 							if (index >= 0) {
-
-								selected = Clinica.getInstance()
-										.buscarVacunaByCode(tableVacunas.getValueAt(index, 0).toString());
-								btnDelete.setEnabled(true);
+								if (enfermedad == null)
+									btnDelete.setEnabled(true);
+								else
+									btnAplicarVacuna.setEnabled(true);
 							}
 						}
 					});
@@ -99,23 +86,47 @@ public class ListVacuna extends JDialog {
 					}
 				});
 				{
-					btnDelete = new JButton("Eliminar");
-					btnDelete.setEnabled(false);
-					btnDelete.addActionListener(new ActionListener() {
-						public void actionPerformed(ActionEvent e) {
-							Clinica.getInstance().getMisVacunas().remove(selected);
-							btnDelete.setEnabled(false);
-							loadVacunas();
-						}
-					});
-					buttonPane.add(btnDelete);
+					if (enfermedad == null) {
+						btnDelete = new JButton("Eliminar");
+						btnDelete.setEnabled(false);
+						btnDelete.addActionListener(new ActionListener() {
+							public void actionPerformed(ActionEvent e) {
+								Clinica.getInstance().getMisVacunas()
+										.remove(Clinica.getInstance().getMisVacunas().remove(index));
+								btnDelete.setEnabled(false);
+								loadVacunas();
+							}
+						});
+						buttonPane.add(btnDelete);
+					}
+				}
+				{
+					if (enfermedad != null) {
+						btnAplicarVacuna = new JButton("Aplicar vacuna");
+						btnAplicarVacuna.addActionListener(new ActionListener() {
+							public void actionPerformed(ActionEvent e) {
+								int option = JOptionPane.showConfirmDialog(ListVacuna.this, "¿Desea aplicar la vacuna?",
+										"Confirmación", JOptionPane.YES_NO_OPTION);
+								if (option == JOptionPane.YES_OPTION) {
+									paciente.vacunar(Clinica.getInstance()
+											.buscarVacunaByCode((String) tableVacunas.getValueAt(index, 0)));
+									dispose();
+								}
+							}
+						});
+						btnAplicarVacuna.setEnabled(false);
+						buttonPane.add(btnAplicarVacuna);
+					}
 				}
 				btnCancel.setActionCommand("Cancel");
 				buttonPane.add(btnCancel);
 			}
 		}
-
-		loadVacunas();
+		if (enfermedad == null)
+			loadVacunas();
+		else {
+			loadVacunasAplicar(enfermedad);
+		}
 	}
 
 	public static void loadVacunas() {
@@ -134,6 +145,28 @@ public class ListVacuna extends JDialog {
 				row[4] = "Sin usar";
 
 			modelo.addRow(row);
+		}
+
+	}
+
+	public void loadVacunasAplicar(Enfermedad enfermedad) {
+		modelo.setRowCount(0);
+		row = new Object[tableVacunas.getColumnCount()];
+
+		for (Vacuna vacuna : Clinica.getInstance().getMisVacunas()) {
+			if (vacuna.getLasEnfermedades().contains(enfermedad) && !vacuna.isUsed()) {
+				row[0] = vacuna.getCodigo();
+				row[1] = vacuna.getNombre();
+				row[2] = vacuna.getDescripcion();
+				row[3] = dameMisEnfermedades(vacuna.getLasEnfermedades());
+
+				if (vacuna.isUsed())
+					row[4] = "Usada";
+				else
+					row[4] = "Sin usar";
+
+				modelo.addRow(row);
+			}
 		}
 
 	}
