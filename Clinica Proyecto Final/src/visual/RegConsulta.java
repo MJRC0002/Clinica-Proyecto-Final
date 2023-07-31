@@ -398,7 +398,7 @@ public class RegConsulta extends JDialog {
 						else
 							bv = false;
 						boolean vacunado;
-						if (lasVacunas != null)
+						if (txtVacuna.getText().isEmpty())
 							vacunado = true;
 						else
 							vacunado = false;
@@ -420,7 +420,9 @@ public class RegConsulta extends JDialog {
 
 							if (vacunado == true)
 								for (Vacuna vacuna : lasVacunas)
-									paciente.getMisVacunas().add(vacuna);
+								{	vacuna.usarVacuna();
+									paciente.vacunar(vacuna);
+								}
 
 							Clinica.getInstance().getMisConsultas().add(consulta);
 							Clinica.getInstance().getMisPacientes().add(paciente);

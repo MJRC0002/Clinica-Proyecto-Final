@@ -50,6 +50,7 @@ import logico.Medico;
 import logico.Paciente;
 import logico.Secretaria;
 import logico.Vacuna;
+import sun.management.MemoryNotifInfoCompositeData;
 
 public class Principal extends JFrame {
 
@@ -57,6 +58,7 @@ public class Principal extends JFrame {
 	private JPanel contentPane;
 	private Dimension dim;
 	private JPanel panel;
+	private JMenu mnPaciente;
 
 	private class ActualizarGraficosWorker extends Thread {
 		@Override
@@ -121,7 +123,7 @@ public class Principal extends JFrame {
 			// tercera grafica
 			DefaultCategoryDataset line_chart_dataset = new DefaultCategoryDataset();
 			for (Vacuna vacuna : Clinica.getInstance().getMisVacunas()) {
-				line_chart_dataset.addValue(Clinica.getInstance().porcentajeVacunado(vacuna.getCodigo()), "Vacunados",
+				line_chart_dataset.setValue(Clinica.getInstance().porcentajeVacunado(vacuna.getCodigo()), "Vacunados",
 						vacuna.getNombre());
 			}
 			JFreeChart vacunadoChart = ChartFactory.createLineChart("Porcentaje Vacunado", "Mes", "Porciento",
@@ -209,15 +211,23 @@ public class Principal extends JFrame {
 		});
 		mnMedico.add(mntmListarMedico);
 
-		JMenu mnPaciente = new JMenu("Paciente");
+		mnPaciente = new JMenu("Paciente");
+		mnPaciente.setEnabled(false);
 		menuBar.add(mnPaciente);
 
 		JMenuItem mntmListarPaciente = new JMenuItem("Listar Pacientes");
 		mntmListarPaciente.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				ListPaciente listarPacientes = new ListPaciente();
-				listarPacientes.setModal(true);
-				listarPacientes.setVisible(true);
+				Medico medico = (Medico) usuario;
+				if (medico.getMisConsultas().size() == 0)
+					JOptionPane.showMessageDialog(null,
+							"Usted no puede listar sus consultas, porque aun no tiene registradas.",
+							"No tiene consultas", JOptionPane.ERROR_MESSAGE);
+				else {
+					ListPaciente listarPacientes = new ListPaciente(medico.getMisConsultas());
+					listarPacientes.setModal(true);
+					listarPacientes.setVisible(true);
+				}
 			}
 		});
 		mnPaciente.add(mntmListarPaciente);
@@ -245,7 +255,8 @@ public class Principal extends JFrame {
 		JMenuItem mntmListarConsulta = new JMenuItem("Listar consultas");
 		mntmListarConsulta.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				ListConsulta consulta = new ListConsulta(null);
+				Medico medico = (Medico) usuario;
+				ListConsulta consulta = new ListConsulta(medico.getMisConsultas());
 				consulta.setModal(true);
 				consulta.setVisible(true);
 			}
@@ -310,9 +321,15 @@ public class Principal extends JFrame {
 		JMenuItem mntmRegistrarVacuna = new JMenuItem("Registrar vacuna");
 		mntmRegistrarVacuna.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				RegVacuna vacuna = new RegVacuna();
-				vacuna.setModal(true);
-				vacuna.setVisible(true);
+				if (Clinica.getInstance().getMisEnfermedades().size() == 0)
+					JOptionPane.showMessageDialog(null,
+							"Usted no puede registrar vacunas, puesto que no hay enfermedades a las cual adjudicar la vacuna.",
+							"No hay enfermedades", JOptionPane.ERROR_MESSAGE);
+				else {
+					RegVacuna vacuna = new RegVacuna();
+					vacuna.setModal(true);
+					vacuna.setVisible(true);
+				}
 			}
 		});
 		mnVacuna.add(mntmRegistrarVacuna);
@@ -328,13 +345,20 @@ public class Principal extends JFrame {
 		mnVacuna.add(mntmListarVacuna);
 
 		JMenuItem mntmAplicarVacuna = new JMenuItem("Aplicar vacuna");
+		mntmAplicarVacuna.setEnabled(false);
 		mntmAplicarVacuna.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				Medico medico = (Medico) usuario;
-				AplicarVacuna aplicarVacuna = new AplicarVacuna(
-						Clinica.getInstance().pacientesEnfermosConVacunasDisponibles(medico.getMisConsultas()));
-				aplicarVacuna.setModal(true);
-				aplicarVacuna.setVisible(true);
+				if (medico.getMisConsultas().size() == 0)
+					JOptionPane.showMessageDialog(null,
+							"Usted no puede aplicar vacuna, puesto que no tiene pacientes registrados.",
+							"No tiene pacientes", JOptionPane.ERROR_MESSAGE);
+				else {
+					AplicarVacuna aplicarVacuna = new AplicarVacuna(
+							Clinica.getInstance().pacientesEnfermosConVacunasDisponibles(medico.getMisConsultas()));
+					aplicarVacuna.setModal(true);
+					aplicarVacuna.setVisible(true);
+				}
 			}
 		});
 		mnVacuna.add(mntmAplicarVacuna);
@@ -432,6 +456,8 @@ public class Principal extends JFrame {
 			mnRespaldo.setEnabled(false);
 			mntmRegistrarEnfermedad.setEnabled(false);
 			mntmRegistrarVacuna.setEnabled(false);
+			mntmAplicarVacuna.setEnabled(true);
+			mnPaciente.setEnabled(true);
 
 		} else if (usuario instanceof Secretaria) {
 			mnConsulta.setEnabled(false);

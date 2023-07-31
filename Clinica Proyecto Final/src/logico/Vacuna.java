@@ -39,5 +39,10 @@ public class Vacuna implements Serializable{
 	public boolean isUsed() {
 		return used;
 	}
+	
+	public void usarVacuna() {
+		if(!used)
+			used = true;
+	}
 
 }

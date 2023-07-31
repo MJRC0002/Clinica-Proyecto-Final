@@ -11,12 +11,8 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.border.TitledBorder;
 import javax.swing.table.DefaultTableModel;
 
-import logico.Clinica;
 import logico.Consulta;
-import logico.Paciente;
-import logico.Vacuna;
 
-import javax.swing.BoxLayout;
 import javax.swing.JScrollPane;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.JTable;
@@ -79,7 +75,8 @@ public class AplicarVacuna extends JDialog {
 				btnAplicarVacuna = new JButton("Aplicar vacuna");
 				btnAplicarVacuna.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent e) {
-						ListVacuna listarVacuna = new ListVacuna(misConsultas.get(index).getEnfermedad(), misConsultas.get(index).getPaciente());
+						ListVacuna listarVacuna = new ListVacuna(misConsultas.get(index).getEnfermedad(),
+								misConsultas.get(index).getPaciente());
 						listarVacuna.setModal(true);
 						listarVacuna.setVisible(true);
 					}
@@ -107,10 +104,12 @@ public class AplicarVacuna extends JDialog {
 		model.setRowCount(0);
 		rows = new Object[table.getColumnCount()];
 		for (Consulta consulta : misConsultas) {
-			rows[0] = consulta.getPaciente().getCodigo();
-			rows[1] = consulta.getPaciente().getNombre();
-			rows[2] = Integer.toString(consulta.getPaciente().getEdad());
-			rows[3] = consulta.getEnfermedad().getNombre();
+			if (consulta.getEnfermedad() != null) {
+				rows[0] = consulta.getPaciente().getCodigo();
+				rows[1] = consulta.getPaciente().getNombre();
+				rows[2] = Integer.toString(consulta.getPaciente().getEdad());
+				rows[3] = consulta.getEnfermedad().getNombre();
+			}
 
 			model.addRow(rows);
 

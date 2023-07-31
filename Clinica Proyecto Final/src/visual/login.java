@@ -117,7 +117,7 @@ public class login extends JFrame implements KeyListener {
 		panel.add(txtPassword);
 		txtPassword.setColumns(10);
 
-		btnLogin = new JButton("Login");
+		btnLogin = new JButton("Ingresar");
 		btnLogin.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				Object aux = null;

@@ -7,8 +7,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
 
 import javax.swing.JButton;
 import javax.swing.JDialog;
@@ -16,10 +14,8 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
-import javax.swing.JSpinner;
 import javax.swing.JTable;
 import javax.swing.JTextField;
-import javax.swing.SpinnerDateModel;
 import javax.swing.UIManager;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.TitledBorder;
@@ -347,8 +343,8 @@ public class ListConsulta extends JDialog {
 			txtFecha.setText(dateFormat.format(miConsulta.getFecha()));
 			txtDiagnostico.setText(miConsulta.getDiagnostico());
 			txtSintomas.setText(miConsulta.getSintomas());
-			txtEnfermedad.setText(miConsulta.getEnfermedad().getNombre());
-
+			if (miConsulta.getEnfermedad() != null)
+				txtEnfermedad.setText(miConsulta.getEnfermedad().getNombre());
 			if (miConsulta.isBajoVig()) {
 				rdbtnSiBajoVigilancia.setSelected(true);
 			} else {

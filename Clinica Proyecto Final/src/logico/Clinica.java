@@ -196,7 +196,7 @@ public class Clinica implements Serializable {
 		int count = 0;
 		for (Paciente paciente : misPacientes) {
 			for (Vacuna vacuna : paciente.getMisVacunas()) {
-				if (vacuna.getCodigo().equalsIgnoreCase(idVacuna)) {
+				if (vacuna.getCodigo().equalsIgnoreCase(idVacuna) && vacuna.isUsed()) {
 					count++;
 				}
 			}

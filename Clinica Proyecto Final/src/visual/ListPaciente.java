@@ -19,6 +19,7 @@ import javax.swing.border.TitledBorder;
 import javax.swing.table.DefaultTableModel;
 
 import logico.Clinica;
+import logico.Consulta;
 import logico.Enfermedad;
 import logico.HistorialMedico;
 import logico.Paciente;
@@ -36,23 +37,8 @@ public class ListPaciente extends JDialog {
 	private Paciente miPaciente = null;
 	private HistorialMedico historialMedico = null;
 
-	/**
-	 * Launch the application.
-	 */
-	public static void main(String[] args) {
-		try {
-			ListPaciente dialog = new ListPaciente();
-			dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
-			dialog.setVisible(true);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
-
-	/**
-	 * Create the dialog.
-	 */
-	public ListPaciente() {
+	
+	public ListPaciente(ArrayList<Consulta>misConsultas) {
 		setResizable(false);
 		setTitle("Listado de Pacientes");
 		setBounds(100, 100, 621, 384);
@@ -124,20 +110,20 @@ public class ListPaciente extends JDialog {
 
 		}
 
-		loadPacientes();
+		loadPacientes(misConsultas);
 	}
 
-	public static void loadPacientes() {
+	public static void loadPacientes(ArrayList<Consulta>consultas) {
 		modelo.setRowCount(0);
 		row = new Object[tablePaciente.getColumnCount()];
 
-		for (Paciente paciente : Clinica.getInstance().getMisPacientes()) {
-			row[0] = paciente.getCodigo();
-			row[1] = paciente.getNombre();
-			row[2] = paciente.getEdad();
-			row[3] = paciente.getGenero();
+		for (Consulta consulta : consultas) {
+			row[0] = consulta.getPaciente().getCodigo();
+			row[1] = consulta.getPaciente().getNombre();
+			row[2] = consulta.getPaciente().getEdad();
+			row[3] = consulta.getPaciente().getGenero();
 
-			if (paciente.getMiHIstorial().getMisConsultasRelevantes().size() > 0)
+			if (consulta.getPaciente().getMiHIstorial().getMisConsultasRelevantes().size() > 0)
 				row[4] = "Tiene";
 			else
 				row[4] = "No tiene";
