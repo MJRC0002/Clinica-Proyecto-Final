@@ -24,6 +24,8 @@ import logico.Enfermedad;
 import logico.Vacuna;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import javax.swing.JSpinner;
+import javax.swing.SpinnerNumberModel;
 
 public class RegVacuna extends JDialog {
 
@@ -40,6 +42,7 @@ public class RegVacuna extends JDialog {
 	private JButton btnAgregar;
 	private JButton btnQuitar;
 	private static Object[] row;
+	private JSpinner spnCantVacunas;
 
 	/**
 	 * Launch the application.
@@ -60,7 +63,7 @@ public class RegVacuna extends JDialog {
 	public RegVacuna() {
 		setTitle("Registrar Vacuna");
 		setResizable(false);
-		setBounds(100, 100, 783, 416);
+		setBounds(100, 100, 783, 429);
 		setLocationRelativeTo(null);
 		getContentPane().setLayout(new BorderLayout());
 		contentPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
@@ -78,8 +81,8 @@ public class RegVacuna extends JDialog {
 
 			txtCodigo = new JTextField();
 			txtCodigo.setEditable(false);
-			txtCodigo.setText("Vac - " + (Clinica.getInstance().getMisVacunas().size()+1));
-			txtCodigo.setBounds(94, 13, 116, 22);
+			txtCodigo.setText("Vac - " + (Clinica.getInstance().getMisVacunas().size() + 1));
+			txtCodigo.setBounds(94, 13, 127, 22);
 			panel.add(txtCodigo);
 			txtCodigo.setColumns(10);
 
@@ -96,7 +99,7 @@ public class RegVacuna extends JDialog {
 						e.consume();
 				}
 			});
-			txtNombre.setBounds(94, 48, 116, 22);
+			txtNombre.setBounds(94, 48, 127, 22);
 			panel.add(txtNombre);
 			txtNombre.setColumns(10);
 
@@ -120,7 +123,7 @@ public class RegVacuna extends JDialog {
 			JPanel panelEnfermedades = new JPanel();
 			panelEnfermedades.setBorder(new TitledBorder(null, "Enfermedades con las que funciona la vacuna:",
 					TitledBorder.LEADING, TitledBorder.TOP, null, null));
-			panelEnfermedades.setBounds(407, 16, 328, 116);
+			panelEnfermedades.setBounds(400, 16, 328, 126);
 			panel.add(panelEnfermedades);
 			panelEnfermedades.setLayout(new BorderLayout(0, 0));
 
@@ -146,7 +149,7 @@ public class RegVacuna extends JDialog {
 			JPanel panelEnferRegistradas = new JPanel();
 			panelEnferRegistradas.setBorder(new TitledBorder(null, "Enfermedades registradas:", TitledBorder.LEADING,
 					TitledBorder.TOP, null, null));
-			panelEnferRegistradas.setBounds(407, 167, 328, 116);
+			panelEnferRegistradas.setBounds(400, 177, 328, 126);
 			panel.add(panelEnferRegistradas);
 			panelEnferRegistradas.setLayout(new BorderLayout(0, 0));
 
@@ -168,6 +171,15 @@ public class RegVacuna extends JDialog {
 			enferRegistradasModel.setColumnIdentifiers(columnNames2);
 			tableRegistradas.setModel(enferRegistradasModel);
 			scrollPane_1.setViewportView(tableRegistradas);
+
+			JLabel lblCantVacunas = new JLabel("Cantidad de vacunas a elaborar:");
+			lblCantVacunas.setBounds(12, 296, 186, 22);
+			panel.add(lblCantVacunas);
+
+			spnCantVacunas = new JSpinner();
+			spnCantVacunas.setModel(new SpinnerNumberModel(new Integer(1), new Integer(1), null, new Integer(1)));
+			spnCantVacunas.setBounds(210, 296, 127, 22);
+			panel.add(spnCantVacunas);
 		}
 		{
 			JPanel buttonPane = new JPanel();
@@ -177,23 +189,31 @@ public class RegVacuna extends JDialog {
 			{
 				btnRegistrar = new JButton("Registrar");
 				btnRegistrar.addActionListener(new ActionListener() {
+
 					public void actionPerformed(ActionEvent e) {
-						String codigo = txtCodigo.getText();
-						String nombre = txtNombre.getText();
-						String descripcion = txtDescripción.getText();
-						if (nombre.isEmpty() || descripcion.isEmpty()) {
+						int cant = new Integer(spnCantVacunas.getValue().toString());
+						if (txtNombre.getText().isEmpty() || txtDescripción.getText().isEmpty()) {
 							JOptionPane.showMessageDialog(null,
 									"Por favor, complete todos los campos antes de registrar la vacuna.",
 									"Campos incompletos", JOptionPane.ERROR_MESSAGE);
 						} else {
-							Vacuna vacuna = new Vacuna(codigo, nombre, descripcion);
-							for (int i = 0; i < enferSeleccionadasModel.getRowCount(); i++) {
-								Enfermedad enfermedad = Clinica.getInstance()
-										.buscarEnfermedadByCode((String) enferSeleccionadasModel.getValueAt(i, 0));
-								vacuna.getLasEnfermedades().add(enfermedad);
-								//enfermedad.getVacunasEfectivas().add(vacuna);
+							for (int i = 0; i < cant; i++) {
+								txtCodigo.setText("Vac - " + (Clinica.getInstance().getMisVacunas().size() + 1));
+								String codigo = txtCodigo.getText();
+								String nombre = txtNombre.getText();
+								String descripcion = txtDescripción.getText();
+								Vacuna vacuna = new Vacuna(codigo, nombre, descripcion);
+								for (int j = 0; j < enferSeleccionadasModel.getRowCount(); j++) {
+									Enfermedad enfermedad = Clinica.getInstance()
+											.buscarEnfermedadByCode((String) enferSeleccionadasModel.getValueAt(j, 0));
+									vacuna.getLasEnfermedades().add(enfermedad);
+									// enfermedad.getVacunasEfectivas().add(vacuna);
+								}
+								Clinica.getInstance().getMisVacunas().add(vacuna);
+								JOptionPane.showMessageDialog(null,
+										"Se registró la vacuna #" + (i + 1) + " de un total de: " + cant,
+										"Registrada correctamente", JOptionPane.INFORMATION_MESSAGE);
 							}
-							Clinica.getInstance().getMisVacunas().add(vacuna);
 							clean();
 						}
 					}
@@ -231,16 +251,18 @@ public class RegVacuna extends JDialog {
 				btnCancelar.setActionCommand("Cancel");
 				buttonPane.add(btnCancelar);
 			}
+
 		}
 		loadEnfermedades();
 	}
 
 	protected void clean() {
-		txtCodigo.setText("Vac - " + (Clinica.getInstance().getMisVacunas().size()+1));
+		txtCodigo.setText("Vac - " + (Clinica.getInstance().getMisVacunas().size() + 1));
 		txtNombre.setText("");
 		txtDescripción.setText("");
 		enferSeleccionadasModel.setRowCount(0);
 		enferRegistradasModel.setRowCount(0);
+		spnCantVacunas.setValue(1);
 
 		// Deshabilita los botones Agregar y Quitar
 		btnAgregar.setEnabled(false);

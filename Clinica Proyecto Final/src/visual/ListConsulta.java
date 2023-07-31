@@ -6,6 +6,7 @@ import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 
@@ -63,13 +64,14 @@ public class ListConsulta extends JDialog {
 	private JButton btnAnterior;
 	private JButton btnSiguiente;
 	private JTextField txtFecha;
+	private ArrayList<Consulta> consultasEspeciales;
 
 	/**
 	 * Launch the application.
 	 */
 	public static void main(String[] args) {
 		try {
-			ListConsulta dialog = new ListConsulta();
+			ListConsulta dialog = new ListConsulta(null);
 			dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 			dialog.setVisible(true);
 		} catch (Exception e) {
@@ -80,7 +82,8 @@ public class ListConsulta extends JDialog {
 	/**
 	 * Create the dialog.
 	 */
-	public ListConsulta() {
+	public ListConsulta(ArrayList<Consulta> consultasRelevantes) {
+
 		setResizable(false);
 		setTitle("Listar Consulta");
 		setBounds(100, 100, 535, 670);
@@ -176,7 +179,7 @@ public class ListConsulta extends JDialog {
 			txtSintomas.setColumns(10);
 			txtSintomas.setBounds(244, 225, 233, 76);
 			panelConsulta.add(txtSintomas);
-			
+
 			txtFecha = new JTextField();
 			txtFecha.setEditable(false);
 			txtFecha.setBounds(298, 37, 146, 26);
@@ -281,7 +284,10 @@ public class ListConsulta extends JDialog {
 				public void actionPerformed(ActionEvent e) {
 					if (index > 0) {
 						index--;
-						loadConsulta();
+						if (consultasRelevantes != null)
+							loadConsultaEspecial(consultasRelevantes);
+						else
+							loadConsulta();
 						if (index == 0)
 							btnAnterior.setEnabled(false);
 
@@ -295,7 +301,10 @@ public class ListConsulta extends JDialog {
 					if (index < Clinica.getInstance().getMisConsultas().size()) {
 						index++;
 						btnAnterior.setEnabled(true);
-						loadConsulta();
+						if (consultasRelevantes != null)
+							loadConsultaEspecial(consultasRelevantes);
+						else
+							loadConsulta();
 					}
 				}
 			});
@@ -319,12 +328,15 @@ public class ListConsulta extends JDialog {
 				buttonPane.add(btnCancelar);
 			}
 		}
-		loadConsulta();
+		if (consultasRelevantes != null)
+			loadConsultaEspecial(consultasRelevantes);
+		else
+			loadConsulta();
 	}
 
 	public void loadConsulta() {
 		int size = Clinica.getInstance().getMisConsultas().size();
-		if (size > 0 && index < size ) {
+		if (size > 0 && index < size) {
 			miConsulta = Clinica.getInstance().getMisConsultas().get(index);
 			txtCodigoConsulta.setText(miConsulta.getCodConsulta());
 			txtCodigoPaciente.setText(miConsulta.getPaciente().getCodigo());
@@ -361,11 +373,60 @@ public class ListConsulta extends JDialog {
 				rdbtnNoEstarEnfermo.setSelected(true);
 			}
 			loadEnfermedades();
-			if (index < size-1) 
+			if (index < size - 1)
 				btnSiguiente.setEnabled(true);
-			else 
+			else
 				btnSiguiente.setEnabled(false);
-			
+
+		}
+
+	}
+
+	public void loadConsultaEspecial(ArrayList<Consulta> consultasRelevantes) {
+		int size = consultasRelevantes.size();
+		if (size > 0 && index < size) {
+			miConsulta = consultasRelevantes.get(index);
+			txtCodigoConsulta.setText(miConsulta.getCodConsulta());
+			txtCodigoPaciente.setText(miConsulta.getPaciente().getCodigo());
+			txtDiagnostico.setText(miConsulta.getDiagnostico());
+			txtEdad.setText(Integer.toString(miConsulta.getPaciente().getEdad()));
+			txtNombre.setText(miConsulta.getPaciente().getNombre());
+			SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm dd/MM/yyyy");
+			txtFecha.setText(dateFormat.format(miConsulta.getFecha()));
+			txtDiagnostico.setText(miConsulta.getDiagnostico());
+			txtSintomas.setText(miConsulta.getSintomas());
+			if (miConsulta.getEnfermedad() != null)
+				txtEnfermedad.setText(miConsulta.getEnfermedad().getNombre());
+
+			if (miConsulta.isBajoVig()) {
+				rdbtnSiBajoVigilancia.setSelected(true);
+			} else {
+				rdbtnNoBajoVigilancia.setSelected(true);
+			}
+
+			if (miConsulta.getPaciente().getGenero() == 'm') {
+				rdbtnMasculino.setSelected(true);
+			} else {
+				rdbtnFemenino.setSelected(true);
+			}
+
+			if (miConsulta.getPaciente().isSeguroMedico()) {
+				rdbtnTieneSeguro.setSelected(true);
+			} else {
+				rdbtnNoTieneSeguro.setSelected(true);
+			}
+
+			if (miConsulta.getPaciente().isEnfermo()) {
+				rdbtnEstaEnfermo.setSelected(true);
+			} else {
+				rdbtnNoEstarEnfermo.setSelected(true);
+			}
+			loadEnfermedades();
+			if (index < size - 1)
+				btnSiguiente.setEnabled(true);
+			else
+				btnSiguiente.setEnabled(false);
+
 		}
 
 	}

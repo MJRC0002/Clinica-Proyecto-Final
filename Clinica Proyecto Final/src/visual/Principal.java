@@ -189,25 +189,38 @@ public class Principal extends JFrame {
 		JMenu mnMedico = new JMenu("M\u00E9dico");
 		menuBar.add(mnMedico);
 
-		JMenuItem mntmNewMenuItem = new JMenuItem("Registrar m\u00E9dico");
-		mntmNewMenuItem.addActionListener(new ActionListener() {
+		JMenuItem mntmRegistrarMedico = new JMenuItem("Registrar m\u00E9dico");
+		mntmRegistrarMedico.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				RegMedico medico = new RegMedico();
 				medico.setModal(true);
 				medico.setVisible(true);
 			}
 		});
-		mnMedico.add(mntmNewMenuItem);
+		mnMedico.add(mntmRegistrarMedico);
 
-		JMenuItem mntmNewMenuItem_1 = new JMenuItem("Listar M\u00E9dico");
-		mntmNewMenuItem_1.addActionListener(new ActionListener() {
+		JMenuItem mntmListarMedico = new JMenuItem("Listar M\u00E9dicos");
+		mntmListarMedico.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				ListarMedicos medicos = new ListarMedicos();
 				medicos.setModal(true);
 				medicos.setVisible(true);
 			}
 		});
-		mnMedico.add(mntmNewMenuItem_1);
+		mnMedico.add(mntmListarMedico);
+
+		JMenu mnPaciente = new JMenu("Paciente");
+		menuBar.add(mnPaciente);
+
+		JMenuItem mntmListarPaciente = new JMenuItem("Listar Pacientes");
+		mntmListarPaciente.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				ListPaciente listarPacientes = new ListPaciente();
+				listarPacientes.setModal(true);
+				listarPacientes.setVisible(true);
+			}
+		});
+		mnPaciente.add(mntmListarPaciente);
 
 		JMenu mnConsulta = new JMenu("Consulta");
 		menuBar.add(mnConsulta);
@@ -229,10 +242,10 @@ public class Principal extends JFrame {
 		});
 		mnConsulta.add(mntmRegistrarConsulta);
 
-		JMenuItem mntmListarConsulta = new JMenuItem("Listar consulta");
+		JMenuItem mntmListarConsulta = new JMenuItem("Listar consultas");
 		mntmListarConsulta.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				ListConsulta consulta = new ListConsulta();
+				ListConsulta consulta = new ListConsulta(null);
 				consulta.setModal(true);
 				consulta.setVisible(true);
 			}
@@ -258,7 +271,7 @@ public class Principal extends JFrame {
 		});
 		mnCita.add(mntmRegistrarCita);
 
-		JMenuItem mntmListarCita = new JMenuItem("Listar cita");
+		JMenuItem mntmListarCita = new JMenuItem("Listar citas");
 		mntmListarCita.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				ListCita cita = new ListCita(false, usuario);
@@ -281,7 +294,7 @@ public class Principal extends JFrame {
 		});
 		mnEnfermedad.add(mntmRegistrarEnfermedad);
 
-		JMenuItem mntmListarEnfermedad = new JMenuItem("Listar enfermedad");
+		JMenuItem mntmListarEnfermedad = new JMenuItem("Listar enfermedades");
 		mntmListarEnfermedad.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				ListEnfermedad enfermedad = new ListEnfermedad();
@@ -304,7 +317,7 @@ public class Principal extends JFrame {
 		});
 		mnVacuna.add(mntmRegistrarVacuna);
 
-		JMenuItem mntmListarVacuna = new JMenuItem("Listar vacuna");
+		JMenuItem mntmListarVacuna = new JMenuItem("Listar vacunas");
 		mntmListarVacuna.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				ListVacuna vacuna = new ListVacuna(null, null);
@@ -313,12 +326,13 @@ public class Principal extends JFrame {
 			}
 		});
 		mnVacuna.add(mntmListarVacuna);
-		
+
 		JMenuItem mntmAplicarVacuna = new JMenuItem("Aplicar vacuna");
 		mntmAplicarVacuna.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				Medico medico = (Medico) usuario;
-				AplicarVacuna aplicarVacuna = new AplicarVacuna(Clinica.getInstance().pacientesEnfermosConVacunasDisponibles(medico.getMisConsultas()));
+				AplicarVacuna aplicarVacuna = new AplicarVacuna(
+						Clinica.getInstance().pacientesEnfermosConVacunasDisponibles(medico.getMisConsultas()));
 				aplicarVacuna.setModal(true);
 				aplicarVacuna.setVisible(true);
 			}
@@ -418,7 +432,7 @@ public class Principal extends JFrame {
 			mnRespaldo.setEnabled(false);
 			mntmRegistrarEnfermedad.setEnabled(false);
 			mntmRegistrarVacuna.setEnabled(false);
-			
+
 		} else if (usuario instanceof Secretaria) {
 			mnConsulta.setEnabled(false);
 			mnRespaldo.setEnabled(false);
@@ -426,15 +440,7 @@ public class Principal extends JFrame {
 			mnSecretaria.setEnabled(false);
 			mnEnfermedad.setEnabled(false);
 			mnVacuna.setEnabled(false);
-		}
-
-		JPanel buttonPane = new JPanel();
-		buttonPane.setBorder(new TitledBorder(null, "", TitledBorder.LEADING, TitledBorder.TOP, null, null));
-		buttonPane.setLayout(new FlowLayout(FlowLayout.RIGHT));
-		getContentPane().add(buttonPane, BorderLayout.SOUTH);
-		{
-			JButton btnMes = new JButton("Mes");
-			buttonPane.add(btnMes);
+			mnPaciente.setEnabled(false);
 		}
 
 	}
